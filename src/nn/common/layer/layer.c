@@ -11,7 +11,7 @@ struct Layer createLayer(int inputCount, int nodesCount) {
     layer.nodesCount = nodesCount;
     layer.nodes = (struct Node *) malloc(sizeof(struct Node) * nodesCount);
     for (int nodeIndex = 0; nodeIndex < layer.nodesCount; ++nodeIndex) {
-        layer.nodes[nodeIndex] = createNode(layer.inputCount);
+        layer.nodes[nodeIndex] = node_createNode(layer.inputCount);
     }
     return layer;
 }

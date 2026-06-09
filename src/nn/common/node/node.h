@@ -17,6 +17,10 @@ struct Node {
     int sizeOfNode;
 };
 
-struct Node createNode(int inputCount);
-void removeNode(struct Node node);
+typedef struct Node Node;
+
+Node node_createNode(int inputCount);
+void node_generateWeights(Node node);
+void node_removeNode(Node node);
+void node_setInput(Node node, double *input);
 #endif //LSTM_C_PROJECT_NODE_H
