@@ -17,10 +17,16 @@ struct Node {
     int sizeOfNode;
 };
 
-typedef struct Node Node;
+typedef struct Node t_node;
 
-Node node_createNode(int inputCount);
-void node_generateWeights(Node node);
-void node_removeNode(Node node);
-void node_setInput(Node node, double *input);
+void node_init(t_node *node, int inputCount);
+void node_generate_weights(t_node *node);
+void node_set_weights(t_node *node, double *weigths);
+void node_destroy(t_node *node);
+void node_set_input(t_node *node, double *input);
+double node_sigma_activation(double summ);
+double node_tanh_activation(double summ);
+void node_self_sum_calculation(t_node *node);
+void node_self_value_sigma_calculation(t_node *node);
+void node_self_value_tanh_calculation(t_node *node);
 #endif //LSTM_C_PROJECT_NODE_H
