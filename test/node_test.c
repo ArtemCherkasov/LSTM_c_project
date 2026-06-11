@@ -43,7 +43,7 @@ void assert_sigma_activate(int inputCount, double *inputs, double *weights){
 }
 
 int main(){
-    assert_create_node(220, 5352);
+    assert_create_node(220, 6240);
     assert_set_input_to_node(10, _inputs);
     assert_sigma_activate(2, _inputs_for_sigma, _weights_for_sigma);
     return 0;

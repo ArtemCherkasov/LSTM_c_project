@@ -13,10 +13,12 @@ void node_init(t_node *node, int inputCount) {
     node->inputs = malloc(sizeof(double) * inputCount);
     node->weights = malloc(sizeof(double) * inputCount);
     node->deltaOfWeight = malloc(sizeof(double) * inputCount);
+    node->directions = malloc(sizeof(t_direction) * inputCount);
     node->sum = 0.0;
     node->nodeValue = 0.0;
-    node->sizeOfNode = sizeof(struct Node) + sizeof(double) * inputCount * 3;
+    node->sizeOfNode = sizeof(struct Node) + sizeof(double) * inputCount * 3 + sizeof(t_direction) * inputCount;
     node_generate_weights(node);
+    node_init_directions(node);
 }
 
 void node_generate_weights(t_node *node) {
@@ -47,7 +49,8 @@ double node_sigma_activation(double summ) {
 }
 
 double node_tanh_activation(double summ) {
-    return (exp(2.0 * summ) + 1.0) / (exp(2.0 * summ) + 1.0);
+    double exp_pow_2_summ = exp(2.0 * summ);
+    return (exp_pow_2_summ - 1.0) / (exp_pow_2_summ + 1.0);
 }
 
 void node_self_value_sigma_calculation(t_node *node) {
@@ -64,4 +67,14 @@ void node_destroy(t_node *node) {
     free(node->inputs);
     free(node->weights);
     free(node->deltaOfWeight);
+}
+
+void node_set_change_action(t_node *node, int weight_index, t_direction direction) {
+
+}
+
+void node_init_directions(t_node *node) {
+    for (int directionIndex = 0; directionIndex < node->inputCount; ++directionIndex) {
+        node->directions[directionIndex] = IMMUTABLE;
+    }
 }
