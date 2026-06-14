@@ -7,13 +7,17 @@
 #include "../node/node.h"
 #include "../bias/bias.h"
 
+typedef struct Layer t_layer;
+
 struct Layer {
     int inputCount;
     int nodesCount;
-    struct Node *nodes;
-    struct Bias *biases;
+    int biasesCount;
+    t_node *nodes;
+    t_bias *biases;
 };
 
-struct Layer createLayer(int inputCount, int nodesCount);
+void layer_init(t_layer *layer, int inputCount, int nodesCount, int biasesCount);
+void layer_destroy(t_layer *layer);
 #endif //LSTM_C_PROJECT_LAYER_H
 

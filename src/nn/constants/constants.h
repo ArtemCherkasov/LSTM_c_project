@@ -5,6 +5,7 @@
 #ifndef LSTM_C_PROJECT_CONSTANTS_H
 #define LSTM_C_PROJECT_CONSTANTS_H
 
-#define BIAS_DEFAULT_VALUE 1.0;
+extern const double BIAS_DEFAULT_VALUE;
+extern const double WEIGHT_DELTA_VALUE;
 
 #endif //LSTM_C_PROJECT_CONSTANTS_H

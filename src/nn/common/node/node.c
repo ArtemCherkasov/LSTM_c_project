@@ -7,6 +7,7 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
+#include "../../constants/constants.h"
 
 void node_init(t_node *node, int inputCount) {
     node->inputCount = inputCount;
@@ -69,8 +70,21 @@ void node_destroy(t_node *node) {
     free(node->deltaOfWeight);
 }
 
-void node_set_change_action(t_node *node, int weight_index, t_direction direction) {
+void node_set_direction(t_node *node, int weight_index, t_direction direction) {
+    node->directions[weight_index] = direction;
+}
 
+void node_action_with_saving_weight(t_node *node, int weight_index) {
+    node->tempWeigth = node->weights[weight_index];
+    if (node->directions[weight_index] == POSITIVE) {
+        node->weights[weight_index] = node->weights[weight_index] + WEIGHT_DELTA_VALUE;
+    } else if (node->directions[weight_index] == NEGATIVE) {
+        node->weights[weight_index] = node->weights[weight_index] - WEIGHT_DELTA_VALUE;
+    }
+}
+
+void node_weight_recover(t_node *node, int weight_index) {
+    node->weights[weight_index] = node->tempWeigth;
 }
 
 void node_init_directions(t_node *node) {
