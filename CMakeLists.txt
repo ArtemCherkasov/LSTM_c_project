@@ -14,5 +14,7 @@ add_executable(LSTM_c_project src/main.c
         src/nn/constants/constants.c)
 
 add_library(node_library src/nn/common/node/node.c)
+add_library(layer_library src/nn/common/layer/layer.c)
+add_library(bias_library src/nn/common/bias/bias.c)
 add_library(constants_library src/nn/constants/constants.c)
 add_subdirectory(test)

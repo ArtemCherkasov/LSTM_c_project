@@ -23,7 +23,6 @@ void node_init(t_node *node, int inputCount) {
 }
 
 void node_generate_weights(t_node *node) {
-    srand(time(NULL));
     for (int weightIndex = 0; weightIndex < node->inputCount; ++weightIndex) {
         node->weights[weightIndex] = (double) rand() / (double) RAND_MAX;
     }
