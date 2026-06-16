@@ -106,7 +106,7 @@ int main() {
     srand(time(NULL));
     assert_create_layer(inputs_count_create_layer, nodes_count_create_layer, biases_count_create_layer);
     assert_layer_set_inputs(inputs_count_layer_set_inputs, nodes_count_layer_set_inputs, biases_count_layer_set_inputs,
-                            inputs);
+        inputs);
     assert_layer_calculate(inputs_count_layer_calculate, nodes_count_layer_calculate, biases_count_layer_calculate,
                            inputs_layer_calculate, weights_for_all_nodes_layer_calculate);
     return 0;
