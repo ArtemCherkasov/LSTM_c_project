@@ -2,11 +2,11 @@
 #include <signal.h>
 
 void exit_handler(int n_signal) {
-    printf("\nExiting ...\n");
+    printf("\nCODE %d\n", n_signal);
+    printf("Exiting ...\n");
 }
 
 int main(int argc, char *argv[]) {
-    signal(SIGTERM, &exit_handler);
+    signal(SIGINT, &exit_handler);
     getchar();
-    return 0;
 }
