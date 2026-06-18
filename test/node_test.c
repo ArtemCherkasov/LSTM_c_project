@@ -23,6 +23,7 @@ void assert_create_node(int inputCount, int sizeOfNode){
     assert(node->inputCount == inputCount);
     assert(node->sizeOfNode == sizeOfNode);
     node_destroy(node);
+    free(node);
 }
 
 void assert_set_input_to_node(int inputCount, double *inputs){
@@ -33,6 +34,7 @@ void assert_set_input_to_node(int inputCount, double *inputs){
     assert(node->inputs[1] == inputs[1]);
     assert(node->inputs[7] == inputs[7]);
     node_destroy(node);
+    free(node);
 }
 
 void assert_sigma_activate(int inputCount, double *inputs, double *weights){
@@ -43,6 +45,7 @@ void assert_sigma_activate(int inputCount, double *inputs, double *weights){
     node_self_value_sigma_calculation(node);
     assert(node->nodeValue == current_answer_for_sigma);
     node_destroy(node);
+    free(node);
 }
 
 void assert_tanh_activate(int inputCount, double *inputs, double *weights){
@@ -53,6 +56,7 @@ void assert_tanh_activate(int inputCount, double *inputs, double *weights){
     node_self_value_tanh_calculation(node);
     assert(node->nodeValue == current_answer_for_tanh);
     node_destroy(node);
+    free(node);
 }
 
 int main(){

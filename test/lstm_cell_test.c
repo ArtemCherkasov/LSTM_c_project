@@ -178,6 +178,7 @@ void assert_create_lstm_cell(int inputCount, int nodesCount) {
         assert(forget_gate_output[node_index] == lstm_cell->forget_gate->output[node_index]);
     }
     lstm_cell_destroy(lstm_cell);
+    free(lstm_cell);
 }
 
 void assert_create_lstm_cell_forward_propagation(int inputCount, int nodesCount) {
@@ -211,6 +212,8 @@ void assert_create_lstm_cell_forward_propagation(int inputCount, int nodesCount)
         assert(cell_state_output_fp[node_index] == lstm_cell->cell_state[node_index]);
         assert(hidden_state_output_fp[node_index] == lstm_cell->hidden_state[node_index]);
     }
+    lstm_cell_destroy(lstm_cell);
+    free(lstm_cell);
 }
 
 int main() {

@@ -25,7 +25,7 @@ struct LSTMCell {
 	double *temp_single_double_value;
 	double *inputs;
 	double *inputs_to_layers;
-	double *expected_vector;
+	double *expected_outputs;
 };
 
 void lstm_cell_init(t_lstm_cell *lstm_cell, int inputs_count, int node_count_per_single_gate);

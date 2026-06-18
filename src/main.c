@@ -1,8 +1,12 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include "nn/common/node/node.h"
-#include "nn/common/layer/layer.h"
+#include <signal.h>
 
-int main(void) {
+void exit_handler(int n_signal) {
+    printf("\nExiting ...\n");
+}
+
+int main(int argc, char *argv[]) {
+    signal(SIGTERM, &exit_handler);
+    getchar();
     return 0;
 }

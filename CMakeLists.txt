@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.2)
+cmake_minimum_required(VERSION 3.22.1)
 project(LSTM_c_project C)
 
 set(CMAKE_C_STANDARD 11)
@@ -13,11 +13,17 @@ add_executable(LSTM_c_project src/main.c
         src/nn/constants/constants.h
         src/nn/constants/constants.c
         src/nn/lstm/lstm_cell/lstm_cell.h
-        src/nn/lstm/lstm_cell/lstm_cell.c)
+        src/nn/lstm/lstm_cell/lstm_cell.c
+        src/nn/lstm/lstm_neural_network/lstm_neural_network.c
+        src/nn/lstm/lstm_neural_network/lstm_neural_network.h)
+
+target_link_libraries(LSTM_c_project m)
 
 add_library(node_library src/nn/common/node/node.c)
 add_library(layer_library src/nn/common/layer/layer.c)
 add_library(bias_library src/nn/common/bias/bias.c)
 add_library(lstm_cell_library src/nn/lstm/lstm_cell/lstm_cell.c)
+add_library(lstm_network_library src/nn/lstm/lstm_neural_network/lstm_neural_network.c)
 add_library(constants_library src/nn/constants/constants.c)
+
 add_subdirectory(test)

@@ -55,6 +55,7 @@ void assert_create_layer(int inputCount, int nodesCount, int biasesCount) {
     assert(nodes_count_create_layer == layer->nodesCount);
     assert(biases_count_create_layer == layer->biasesCount);
     layer_destroy(layer);
+    free(layer);
 }
 
 void assert_layer_set_inputs(int inputCount, int nodesCount, int biasesCount, double *inputs) {
@@ -69,6 +70,7 @@ void assert_layer_set_inputs(int inputCount, int nodesCount, int biasesCount, do
     }
     assert(full_inputs_count_layer_set_inputs == layer->fullInputCount);
     layer_destroy(layer);
+    free(layer);
 }
 
 void assert_layer_calculate(int inputCount, int nodesCount, int biasesCount, double *inputs, double (*weights)[7]) {
@@ -100,6 +102,7 @@ void assert_layer_calculate(int inputCount, int nodesCount, int biasesCount, dou
     }
 
     layer_destroy(layer);
+    free(layer);
 }
 
 int main() {
