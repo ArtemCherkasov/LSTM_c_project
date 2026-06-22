@@ -2,6 +2,7 @@ add_executable(node_test node_test.c)
 add_executable(layer_test layer_test.c)
 add_executable(lstm_cell_test lstm_cell_test.c)
 add_executable(lstm_network_test lstm_network_test.c)
+add_executable(file_read_test file_read_test.c)
 
 target_link_libraries(node_test node_library)
 target_link_libraries(node_test constants_library)
@@ -28,7 +29,10 @@ target_link_libraries(lstm_network_test bias_library)
 target_link_libraries(lstm_network_test constants_library)
 target_link_libraries(lstm_network_test m)
 
+target_link_libraries(file_read_test file_read_library)
+
 add_test(NAME NodeTests COMMAND node_test)
 add_test(NAME LayerTests COMMAND layer_test)
 add_test(NAME LSTMCellTests COMMAND lstm_cell_test)
 add_test(NAME LSTMNeuralNetworkTests COMMAND lstm_network_test)
+add_test(NAME FileReadTests COMMAND file_read_test)
