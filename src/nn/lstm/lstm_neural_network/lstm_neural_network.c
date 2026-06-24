@@ -3,7 +3,6 @@
 //
 
 #include "lstm_neural_network.h"
-
 #include <stdlib.h>
 #include <string.h>
 

@@ -4,6 +4,7 @@
 
 #include "lstm_cell.h"
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -90,6 +91,13 @@ void lstm_cell_forward_propagation(t_lstm_cell *lstm_cell) {
 	lstm_cell_pointwise_addition(lstm_cell->cell_state, lstm_cell->temp_state_vector, lstm_cell->cell_state, lstm_cell->state_vectors_size);
 	lstm_cell_tanh_cell_state_to_temp_vector(lstm_cell);
 	lstm_cell_hadamard_product(lstm_cell->output_gate->output, lstm_cell->temp_state_vector, lstm_cell->hidden_state, lstm_cell->state_vectors_size);
+}
+
+void lstm_cell_print_inputs(t_lstm_cell *lstm_cell) {
+	for (int input_index = 0; input_index < lstm_cell->inputs_count; ++input_index) {
+		printf("%3.4f ", lstm_cell->inputs[input_index]);
+	}
+	printf("\n");
 }
 
 void lstm_cell_destroy(t_lstm_cell *lstm_cell) {

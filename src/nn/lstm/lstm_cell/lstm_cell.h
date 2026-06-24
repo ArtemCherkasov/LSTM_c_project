@@ -38,5 +38,6 @@ void lstm_cell_hadamard_product(double *a, double *b, double *dest_vector, int s
 void lstm_cell_pointwise_addition(double *a, double *b, double *dest_vector, int size);
 void lstm_cell_tanh_cell_state_to_temp_vector(t_lstm_cell *lstm_cell);
 void lstm_cell_forward_propagation(t_lstm_cell *lstm_cell);
+void lstm_cell_print_inputs(t_lstm_cell *lstm_cell);
 void lstm_cell_destroy(t_lstm_cell *lstm_cell);
 #endif //LSTM_C_PROJECT_LSTM_CELL_H
