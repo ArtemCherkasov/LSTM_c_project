@@ -58,9 +58,6 @@ void assert_file_read(char *file_name) {
     assert(day_101053 == file->lines[101053].normalize_nn_buffer[DAY_INDEX]);
     assert(hour_101053 == file->lines[101053].normalize_nn_buffer[HOUR_INDEX]);
 
-    for (int line_index = 0; line_index < file->linesCount; line_index++) {
-        mt5_file_print_normalize_array(&file->lines[line_index]);
-    }
     mt5_file_destroy(file);
     free(file);
 }

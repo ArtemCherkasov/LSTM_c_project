@@ -26,7 +26,7 @@ void lstm_neural_network_set_input(t_lstm_neural_network *lstm_network, double *
 void lstm_neural_network_forward_propagation(t_lstm_neural_network *lstm_network) {
 	for (int cell_index = 0; cell_index < lstm_network->cells_count; cell_index++) {
 		lstm_cell_forward_propagation(&lstm_network->lstm_cells[cell_index]);
-		if (cell_index < lstm_network->cells_count) {
+		if (cell_index < lstm_network->cells_count - 1) {
 			lstm_cell_set_cell_state_inputs(&lstm_network->lstm_cells[cell_index + 1], lstm_network->lstm_cells[cell_index].cell_state);
 			lstm_cell_set_hidden_state_inputs(&lstm_network->lstm_cells[cell_index + 1], lstm_network->lstm_cells[cell_index].hidden_state);
 		}
