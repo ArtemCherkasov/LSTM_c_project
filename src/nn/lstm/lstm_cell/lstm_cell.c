@@ -100,6 +100,13 @@ void lstm_cell_print_inputs(t_lstm_cell *lstm_cell) {
 	printf("\n");
 }
 
+void lstm_cell_print_any_vector(double *vector, int size) {
+	for (int vector_index = 0; vector_index < size; ++vector_index) {
+		printf("%3.15f ", vector[vector_index]);
+	}
+	printf("\n");
+}
+
 void lstm_cell_destroy(t_lstm_cell *lstm_cell) {
 	free(lstm_cell->inputs);
 	free(lstm_cell->hidden_state_inputs);

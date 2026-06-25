@@ -43,16 +43,16 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		strcpy(time_buffer, token_price);
 		token_price = strtok(NULL, mt5_delimiter);
 		mt5file->lines[line_index].open = atof(token_price);
-		mt5file->lines[line_index].normalize_nn_buffer[OPEN_INDEX] = atof(token_price);
+		mt5file->lines[line_index].normalize_nn_buffer[OPEN_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
 		token_price = strtok(NULL, mt5_delimiter);
 		mt5file->lines[line_index].high = atof(token_price);
-		mt5file->lines[line_index].normalize_nn_buffer[HIGH_INDEX] = atof(token_price);
+		mt5file->lines[line_index].normalize_nn_buffer[HIGH_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
 		token_price = strtok(NULL, mt5_delimiter);
 		mt5file->lines[line_index].low = atof(token_price);
-		mt5file->lines[line_index].normalize_nn_buffer[LOW_INDEX] = atof(token_price);
+		mt5file->lines[line_index].normalize_nn_buffer[LOW_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
 		token_price = strtok(NULL, mt5_delimiter);
 		mt5file->lines[line_index].close = atof(token_price);
-		mt5file->lines[line_index].normalize_nn_buffer[CLOSE_INDEX] = atof(token_price);
+		mt5file->lines[line_index].normalize_nn_buffer[CLOSE_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
 		token_price = strtok(NULL, mt5_delimiter);
 		mt5file->lines[line_index].volume = atof(token_price);
 		mt5file->lines[line_index].normalize_nn_buffer[VOLUME_INDEX] = atof(token_price) / NORMALIZE_FACTOR_VOLUME;
@@ -64,19 +64,19 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		mt5file->lines[line_index].normalize_nn_buffer[YEAR_INDEX] = atof(token_price) / NORMALIZE_FACTOR_YEAR;
 		token_price = strtok(NULL, mt5_delimiter_date);
 		mt5file->lines[line_index].month = atoi(token_price);
-		mt5file->lines[line_index].normalize_nn_buffer[MONTH_INDEX] = atof(token_price);
+		mt5file->lines[line_index].normalize_nn_buffer[MONTH_INDEX] = atof(token_price) / NORMALIZE_FACTOR_MONTH;
 		token_price = strtok(NULL, mt5_delimiter_date);
 		mt5file->lines[line_index].day = atoi(token_price);
-		mt5file->lines[line_index].normalize_nn_buffer[DAY_INDEX] = atof(token_price);
+		mt5file->lines[line_index].normalize_nn_buffer[DAY_INDEX] = atof(token_price) / NORMALIZE_FACTOR_DAY;
 		/*
 		 * parse time
 		 */
 		token_price = strtok(time_buffer, mt5_delimiter_time);
 		mt5file->lines[line_index].hour = atoi(token_price);
-		mt5file->lines[line_index].normalize_nn_buffer[HOUR_INDEX] = atof(token_price);
+		mt5file->lines[line_index].normalize_nn_buffer[HOUR_INDEX] = atof(token_price) / NORMALIZE_FACTOR_HOUR;
 		token_price = strtok(NULL, mt5_delimiter_time);
 		mt5file->lines[line_index].minute = atoi(token_price);
-		mt5file->lines[line_index].normalize_nn_buffer[MINUTE_INDEX] = atof(token_price);
+		mt5file->lines[line_index].normalize_nn_buffer[MINUTE_INDEX] = atof(token_price) / NORMALIZE_FACTOR_MINUTE;
 
 		if (mt5file->lines[line_index].open == 0
 		    && mt5file->lines[line_index].high == 0
