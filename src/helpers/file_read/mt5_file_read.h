@@ -50,7 +50,7 @@ struct MT5File {
 
 struct MT5Line {
 	bool has_not_error;
-	char buffer[1024];
+	char *buffer;
 	int day;
 	int month;
 	int year;

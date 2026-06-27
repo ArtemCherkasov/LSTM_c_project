@@ -12,6 +12,7 @@
 
 void exit_handler(int n_signal) {
     printf("\nCODE %d\n", n_signal);
+    raise(SIGTERM);
     printf("Exiting ...\n");
 }
 
@@ -24,9 +25,6 @@ int main(int argc, char *argv[]) {
     lstm_neural_network_init(lstm_network, CELL_COUNT, NORMALIZE_NN_BUFFER_SIZE, NORMALIZE_NN_BUFFER_SIZE);
     int file_row_pointer = 100;
     int file_finish_row_pointer = 10000;
-
-
-
     for (int row_index = file_row_pointer; row_index < file_finish_row_pointer; row_index++) {
         for (int cell_index = 0; cell_index < CELL_COUNT; cell_index++) {
             lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].normalize_nn_buffer);
@@ -40,4 +38,5 @@ int main(int argc, char *argv[]) {
 
     lstm_neural_network_destroy(lstm_network);
     free(lstm_network);
+    return 0;
 }
