@@ -11,14 +11,20 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 	char *date_buffer = malloc(sizeof(char) * 16);
 	char *time_buffer = malloc(sizeof(char) * 16);
 	char *strtok_buffer = malloc(sizeof(char) * 1024);
+	char *file_separator = malloc(sizeof(char));
 	char *token_price;
 	char mt5_delimiter[] = {MT5_DELIMITER};
 	char mt5_delimiter_date[] = {MT5_DELIMITER_DATE};
 	char mt5_delimiter_time[] = {MT5_DELIMITER_TIME};
 
+	strcpy(file_separator, FILE_SEPARATOR);
 	mt5file->linesCount = 0;
 	getcwd(mt5file->path, sizeof(mt5file->path));
+
+	strcat(mt5file->path, file_separator);
 	strcat(mt5file->path, filename);
+
+	printf("\nOpen file %s\n", mt5file->path);
 	mt5file->file = fopen(mt5file->path, "r");
 	if (mt5file->file == NULL) {
 		printf("\nCould not open file %s\n", mt5file->path);
@@ -122,6 +128,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 	free(strtok_buffer);
 	free(date_buffer);
 	free(time_buffer);
+	free(file_separator);
 }
 
 void mt5_file_print_normalize_array(t_mt5line *mt5line) {

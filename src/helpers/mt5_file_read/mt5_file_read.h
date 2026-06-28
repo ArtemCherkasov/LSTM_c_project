@@ -9,9 +9,9 @@
 #include <stdio.h>
 
 #ifdef _WIN32
-#define FILE_SEPARATOR '\\'
+#define FILE_SEPARATOR "\\"
 #else
-#define FILE_SEPARATOR '/'
+#define FILE_SEPARATOR "/"
 #endif
 
 #define MT5_DELIMITER "\t"

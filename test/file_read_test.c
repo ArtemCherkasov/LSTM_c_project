@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <math.h>
 #include <string.h>
-#include "../src/helpers/file_read/mt5_file_read.h"
+#include "../src/helpers/mt5_file_read/mt5_file_read.h"
 
 #define EPS 1e-9
 
@@ -77,7 +77,6 @@ void assert_file_read(char *file_name) {
 }
 
 int main() {
-    strcat(path, file_separator);
     strcat(path, parent_dir);
     strcat(path, file_separator);
     strcat(path, parent_dir);

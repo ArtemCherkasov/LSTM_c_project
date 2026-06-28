@@ -15,6 +15,9 @@ void lstm_neural_network_init(t_lstm_neural_network *lstm_network, int cells_cou
 	lstm_network->nodes_count_per_cell = nodes_count_per_cell;
 	lstm_network->inputs_count_per_network = inputs_count_per_cell * cells_count;
 	lstm_network->lstm_cells = malloc(sizeof(t_lstm_cell) * cells_count);
+	lstm_network->mean_squared_error_from_index = 0;
+	lstm_network->mean_squared_error_from_index_temp = 0;
+	lstm_network->full_mean_squared_error = 0;
 	for (int cell_index = 0; cell_index < lstm_network->cells_count; cell_index++) {
 		lstm_cell_init(&lstm_network->lstm_cells[cell_index], lstm_network->inputs_count_per_cell, lstm_network->nodes_count_per_cell);
 	}
@@ -126,7 +129,7 @@ void lstm_neural_network_learning_step(t_lstm_neural_network *lstm_network) {
 	lstm_neural_network_forward_propagation(lstm_network);
 	lstm_neural_network_prepare_direction(lstm_network);
 	for (int cell_index = 0; cell_index < lstm_network->cells_count; cell_index++) {
-		printf("learning cell %d\n", cell_index);
+		printf("learning action %d\n", cell_index);
 		for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
 			lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
 			lstm_network->mean_squared_error_from_index_temp = lstm_network->mean_squared_error_from_index;
