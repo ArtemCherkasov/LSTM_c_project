@@ -91,6 +91,8 @@ void weight_factors_load_from_file(t_lstm_neural_network *lstm_network, t_main_s
 	file = fopen(path, "r");
 	if (file == NULL) {
 		printf("\nCould not open file %s\n", path);
+		free(file_separator);
+		return;
 	}
 	printf("\nOpen file %s\n", path);
 
@@ -151,7 +153,6 @@ void weight_factors_load_from_file(t_lstm_neural_network *lstm_network, t_main_s
 			}
 		}
 	}
-	printf("weight = %3.20f\n", lstm_network->lstm_cells[479].output_gate->nodes[9].weights[20]);
 	fclose(file);
 	free(file_separator);
 }

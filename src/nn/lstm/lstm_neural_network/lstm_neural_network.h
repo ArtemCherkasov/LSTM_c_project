@@ -19,6 +19,7 @@ struct LSTMNeuralNetwork {
 	double full_mean_squared_error;
 	double mean_squared_error_from_index;
 	double mean_squared_error_from_index_temp;
+	double learning_rate;
 };
 
 void lstm_neural_network_init(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell);

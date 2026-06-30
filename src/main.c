@@ -9,8 +9,8 @@
 #include "helpers/weight_factors_helper/weight_factors.h"
 #include "nn/lstm/lstm_neural_network/lstm_neural_network.h"
 
-#define DAYS 10
-#define CELL_COUNT (48*DAYS)
+#define DAYS 20
+#define CELL_COUNT (24*DAYS)
 #define STEP_FORECAST 24
 
 t_main_struct *main_struct;
@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
     main_struct->source_to_forecast_file_path = 0;
     main_struct->weight_factors_file_path = 0;
     main_struct->price_symbol = 0;
+    main_struct->learning_rate = 0;
 
     for (int arg_index = 0; arg_index < argc; arg_index++) {
         if (strcmp(argv[arg_index], "-ts") == 0 || strcmp(argv[arg_index], "--trainingsource") == 0) {
@@ -47,6 +48,9 @@ int main(int argc, char *argv[]) {
         if (strcmp(argv[arg_index], "-w") == 0 || strcmp(argv[arg_index], "--weight") == 0) {
             main_struct->weight_factors_file_path = argv[arg_index + 1];
         }
+        if (strcmp(argv[arg_index], "-lr") == 0 || strcmp(argv[arg_index], "--learningrate") == 0) {
+            main_struct->learning_rate = atof(argv[arg_index + 1]);
+        }
     }
     signal(SIGINT, &exit_handler);
 
@@ -60,6 +64,10 @@ int main(int argc, char *argv[]) {
         if (main_struct->weight_factors_file_path != 0) {
             printf("Weight factors file: %s\n", main_struct->weight_factors_file_path);
             weight_factors_load_from_file(lstm_network, main_struct);
+        }
+        if (main_struct->learning_rate != 0) {
+            printf("Set learning rate: %0.5f\n", main_struct->learning_rate);
+            lstm_network->learning_rate = main_struct->learning_rate;
         }
         int file_row_pointer = 100;
         int file_finish_row_pointer = 10000;

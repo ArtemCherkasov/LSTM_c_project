@@ -9,6 +9,7 @@
 typedef struct LSTMCell t_lstm_cell;
 
 struct LSTMCell {
+	int cell_index;
 	int node_count_per_single_gate;
 	int state_vectors_size;
 	int inputs_count;

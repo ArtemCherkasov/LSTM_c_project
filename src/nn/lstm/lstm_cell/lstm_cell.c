@@ -79,8 +79,7 @@ void lstm_cell_pointwise_addition(double *a, double *b, double *dest_vector, int
 
 void lstm_cell_tanh_cell_state_to_temp_vector(t_lstm_cell *lstm_cell) {
 	for (int vector_index = 0; vector_index < lstm_cell->state_vectors_size; ++vector_index) {
-		*lstm_cell->temp_single_double_value = exp(2.0 * lstm_cell->cell_state[vector_index]);
-		lstm_cell->temp_state_vector[vector_index] = (*lstm_cell->temp_single_double_value - 1.0) / (*lstm_cell->temp_single_double_value + 1.0);
+		lstm_cell->temp_state_vector[vector_index] = tanh(lstm_cell->cell_state[vector_index]);
 	}
 }
 

@@ -11,6 +11,7 @@ struct MainStruct {
 	char *source_to_forecast_file_path;
 	char *weight_factors_file_path;
 	char *price_symbol;
+	double learning_rate;
 };
 
 #endif //LSTM_C_PROJECT_MAIN_STRUCT_H

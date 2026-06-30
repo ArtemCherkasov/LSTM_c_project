@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
+
 #include "../../constants/constants.h"
 
 void node_init(t_node *node, int inputCount) {
@@ -46,11 +48,6 @@ double node_sigma_activation(double summ) {
     return 1.0 / (1.0 + exp(-summ));
 }
 
-double node_tanh_activation(double summ) {
-    double exp_pow_2_summ = exp(2.0 * summ);
-    return (exp_pow_2_summ - 1.0) / (exp_pow_2_summ + 1.0);
-}
-
 void node_self_value_sigma_calculation(t_node *node) {
     node_self_sum_calculation(node);
     node->nodeValue = node_sigma_activation(node->sum);
@@ -58,7 +55,7 @@ void node_self_value_sigma_calculation(t_node *node) {
 
 void node_self_value_tanh_calculation(t_node *node) {
     node_self_sum_calculation(node);
-    node->nodeValue = node_tanh_activation(node->sum);
+    node->nodeValue = tanh(node->sum);
 }
 
 void node_destroy(t_node *node) {
@@ -71,12 +68,12 @@ void node_set_direction(t_node *node, int weight_index, t_direction direction) {
     node->directions[weight_index] = direction;
 }
 
-void node_action_with_saving_weight(t_node *node, int weight_index) {
+void node_action_with_saving_weight(t_node *node, int weight_index, double weight_delta_value) {
     node->tempWeigth = node->weights[weight_index];
     if (node->directions[weight_index] == POSITIVE) {
-        node->weights[weight_index] = node->weights[weight_index] + WEIGHT_DELTA_VALUE;
+        node->weights[weight_index] = node->weights[weight_index] + weight_delta_value;
     } else if (node->directions[weight_index] == NEGATIVE) {
-        node->weights[weight_index] = node->weights[weight_index] - WEIGHT_DELTA_VALUE;
+        node->weights[weight_index] = node->weights[weight_index] - weight_delta_value;
     }
 }
 

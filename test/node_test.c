@@ -6,6 +6,7 @@
 #include <assert.h>
 #include "../src/nn/common/node/node.h"
 
+#include <stdio.h>
 #include <time.h>
 
 double inputs[] = {0.01, 0.12, 0.79, 0.5, 0.33, 0.2, 0.8, 0.4, 0.6, 0.3};
@@ -15,7 +16,7 @@ double weights_for_sigma[] = {0.002, 0.29};
 double inputs_for_tanh[] = {0.01, 0.12};
 double weights_for_tanh[] = {0.002, 0.29};
 double current_answer_for_sigma = 0.50870412058795244636;
-double current_answer_for_tanh = 0.03480593452261415699;
+double current_answer_for_tanh = 0.03480593452261415005;
 
 void assert_create_node(int inputCount, int sizeOfNode){
     t_node *node = malloc(sizeof(t_node));
