@@ -9,6 +9,7 @@ typedef struct MainStruct t_main_struct;
 struct MainStruct {
 	char *training_source_file_path;
 	char *source_to_forecast_file_path;
+	int forecast_from_line;
 	char *weight_factors_file_path;
 	char *price_symbol;
 	double learning_rate;

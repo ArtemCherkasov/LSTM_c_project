@@ -137,6 +137,15 @@ void mt5_file_print_normalize_array(t_mt5line *mt5line) {
 	}
 }
 
+void mt5_file_print_unormalize_array_from_vector(double *vector) {
+	double open = vector[OPEN_INDEX] * NORMALIZE_FACTOR_PRICE;
+	double high = vector[HIGH_INDEX] * NORMALIZE_FACTOR_PRICE;
+	double low = vector[LOW_INDEX] * NORMALIZE_FACTOR_PRICE;
+	double close = vector[CLOSE_INDEX] * NORMALIZE_FACTOR_PRICE;
+	double volume = vector[VOLUME_INDEX] * NORMALIZE_FACTOR_VOLUME;
+	printf("[%1.5f, %1.5f, %1.5f, %1.5f, %5.1f]\n", open, high, low, close, volume);
+}
+
 void mt5_file_destroy(t_mt5file *mt5file) {
 	for (int line_index = 0; line_index < mt5file->linesCount + 1; line_index++) {
 		free(mt5file->lines[line_index].buffer);

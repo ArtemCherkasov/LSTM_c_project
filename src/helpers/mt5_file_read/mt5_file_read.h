@@ -66,6 +66,7 @@ struct MT5Line {
 
 void mt5_file_init(t_mt5file *mt5file, char *filename);
 void mt5_file_print_normalize_array(t_mt5line *mt5line);
+void mt5_file_print_unormalize_array_from_vector(double *vector);
 void mt5_file_destroy(t_mt5file *mt5file);
 
 #endif //LSTM_C_PROJECT_MT5_FILE_READ_H
