@@ -13,6 +13,7 @@ struct MainStruct {
 	char *weight_factors_file_path;
 	char *price_symbol;
 	double learning_rate;
+	int layers_count;
 };
 
 #endif //LSTM_C_PROJECT_MAIN_STRUCT_H

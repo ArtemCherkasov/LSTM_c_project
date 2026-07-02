@@ -29,7 +29,16 @@ int nodes_count_create_cell_nn = 2;
 
 double hidden_state_inputs_nn[] = {0.0801, -0.0812};
 double cell_state_inputs_nn[] = {0.101, 0.112};
-double inputs_nn[] = {0.01, 0.12};
+double inputs_nn_0[] = {0.01, 0.12};
+double inputs_nn_1[] = {0.03, 0.04};
+double expected_vector[2][2] = {
+    {0.10736, 0.10242},
+    {0.10554, 0.10903}
+};
+double forecast_vector[2][2] = {
+    {0.10737431777746946071, 0.10243824421988192985},
+    {0.10555333598927120475, 0.10904074986825658400}
+};
 
 double weights_for_all_nodes_forget_gate_nn[2][5] =
 {
@@ -65,6 +74,12 @@ double hidden_state_output_nn[] =
 {
     0.29177889909371879096,
     0.22352544083548625542
+};
+
+double hidden_state_second_layer_output_nn[] =
+{
+    0.37060546865140853168,
+    0.32202646443203358784
 };
 
 void assert_lstm_network_pass_inputs(int cellsCount, int inputCount, int nodesCount) {
@@ -109,10 +124,10 @@ void assert_lstm_network_forward_propagation(int cellsCount, int inputCount, int
         }
     }
 
-    lstm_neural_network_set_input(lstm_network, inputs_pass_assert);
     lstm_cell_set_hidden_state_inputs(&lstm_network->lstm_cells[0], hidden_state_inputs_nn);
     lstm_cell_set_cell_state_inputs(&lstm_network->lstm_cells[0], cell_state_inputs_nn);
-    lstm_cell_set_inputs(&lstm_network->lstm_cells[0], inputs_nn);
+    lstm_cell_set_inputs(&lstm_network->lstm_cells[0], inputs_nn_0);
+    lstm_cell_set_inputs(&lstm_network->lstm_cells[1], inputs_nn_1);
     lstm_neural_network_forward_propagation(lstm_network);
 
     for (int node_index = 0; node_index < lstm_network->lstm_cells[0].state_vectors_size; node_index++) {
@@ -124,9 +139,111 @@ void assert_lstm_network_forward_propagation(int cellsCount, int inputCount, int
     free(lstm_network);
 }
 
+void assert_double_lstm_network_forward_propagation(int cellsCount, int inputCount, int nodesCount) {
+    t_lstm_neural_network *lstm_network = malloc(sizeof(t_lstm_neural_network));
+    lstm_neural_network_init(lstm_network, cellsCount, inputCount, nodesCount);
+    lstm_network->index = 0;
+    lstm_network->learning_rate = 0.15;
+    lstm_network->next = malloc(sizeof(t_lstm_neural_network));
+    lstm_neural_network_init(lstm_network->next, cellsCount, inputCount, nodesCount);
+    lstm_network->next->index = 1;
+    lstm_network->next->learning_rate = 0.15;
+
+    for (int cell_index = 0; cell_index < lstm_network->cells_count; cell_index++) {
+        for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].state_vectors_size; node_index++) {
+            for (int input_index = 0; input_index < lstm_network->lstm_cells[cell_index].inputs_to_layers_count_without_biases + BIASES_COUNT; input_index++) {
+                lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].weights[input_index] = weights_for_all_nodes_forget_gate_nn[node_index][input_index];
+            }
+        }
+        for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].state_vectors_size; node_index++) {
+            for (int input_index = 0; input_index < lstm_network->lstm_cells[cell_index].inputs_to_layers_count_without_biases + BIASES_COUNT; input_index++) {
+                lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].weights[input_index] = weights_for_all_nodes_input_gate_nn[node_index][input_index];
+            }
+        }
+        for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].state_vectors_size; node_index++) {
+            for (int input_index = 0; input_index < lstm_network->lstm_cells[cell_index].inputs_to_layers_count_without_biases + BIASES_COUNT; input_index++) {
+                lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].weights[input_index] = weights_for_all_nodes_candidate_cell_state_gate_nn[node_index][input_index];
+            }
+        }
+        for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].state_vectors_size; node_index++) {
+            for (int input_index = 0; input_index < lstm_network->lstm_cells[cell_index].inputs_to_layers_count_without_biases + BIASES_COUNT; input_index++) {
+                lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].weights[input_index] = weights_for_all_nodes_output_gate_nn[node_index][input_index];
+            }
+        }
+    }
+
+    for (int cell_index = 0; cell_index < lstm_network->next->cells_count; cell_index++) {
+        for (int node_index = 0; node_index < lstm_network->next->lstm_cells[cell_index].state_vectors_size; node_index++) {
+            for (int input_index = 0; input_index < lstm_network->next->lstm_cells[cell_index].inputs_to_layers_count_without_biases + BIASES_COUNT; input_index++) {
+                lstm_network->next->lstm_cells[cell_index].forget_gate->nodes[node_index].weights[input_index] = weights_for_all_nodes_forget_gate_nn[node_index][input_index];
+            }
+        }
+        for (int node_index = 0; node_index < lstm_network->next->lstm_cells[cell_index].state_vectors_size; node_index++) {
+            for (int input_index = 0; input_index < lstm_network->next->lstm_cells[cell_index].inputs_to_layers_count_without_biases + BIASES_COUNT; input_index++) {
+                lstm_network->next->lstm_cells[cell_index].input_gate->nodes[node_index].weights[input_index] = weights_for_all_nodes_input_gate_nn[node_index][input_index];
+            }
+        }
+        for (int node_index = 0; node_index < lstm_network->next->lstm_cells[cell_index].state_vectors_size; node_index++) {
+            for (int input_index = 0; input_index < lstm_network->next->lstm_cells[cell_index].inputs_to_layers_count_without_biases + BIASES_COUNT; input_index++) {
+                lstm_network->next->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].weights[input_index] = weights_for_all_nodes_candidate_cell_state_gate_nn[node_index][input_index];
+            }
+        }
+        for (int node_index = 0; node_index < lstm_network->next->lstm_cells[cell_index].state_vectors_size; node_index++) {
+            for (int input_index = 0; input_index < lstm_network->next->lstm_cells[cell_index].inputs_to_layers_count_without_biases + BIASES_COUNT; input_index++) {
+                lstm_network->next->lstm_cells[cell_index].output_gate->nodes[node_index].weights[input_index] = weights_for_all_nodes_output_gate_nn[node_index][input_index];
+            }
+        }
+    }
+
+    lstm_cell_set_hidden_state_inputs(&lstm_network->lstm_cells[0], hidden_state_inputs_nn);
+    lstm_cell_set_cell_state_inputs(&lstm_network->lstm_cells[0], cell_state_inputs_nn);
+    lstm_cell_set_hidden_state_inputs(&lstm_network->next->lstm_cells[0], hidden_state_inputs_nn);
+    lstm_cell_set_cell_state_inputs(&lstm_network->next->lstm_cells[0], cell_state_inputs_nn);
+    lstm_cell_set_inputs(&lstm_network->lstm_cells[0], inputs_nn_0);
+    lstm_cell_set_inputs(&lstm_network->lstm_cells[1], inputs_nn_1);
+    lstm_neural_network_forward_propagation(lstm_network);
+
+    for (int node_index = 0; node_index < lstm_network->lstm_cells[0].state_vectors_size; node_index++) {
+        assert(hidden_state_output_nn[node_index] == lstm_network->next->lstm_cells[0].inputs[node_index]);
+        assert(hidden_state_second_layer_output_nn[node_index] == lstm_network->next->lstm_cells[0].hidden_state[node_index]);
+    }
+
+    lstm_cell_set_expected_vector(&lstm_network->next->lstm_cells[0], expected_vector[0]);
+    lstm_cell_set_expected_vector(&lstm_network->next->lstm_cells[1], expected_vector[1]);
+
+    for (int index = 0 ; index < 50; ++index) {
+        lstm_neural_network_learning_step(lstm_network);
+    }
+
+    lstm_network->learning_rate = 0.001;
+    lstm_network->next->learning_rate = 0.001;
+
+    for (int index = 0 ; index < 300; ++index) {
+        lstm_neural_network_learning_step(lstm_network);
+    }
+
+    lstm_network->learning_rate = 0.00005;
+    lstm_network->next->learning_rate = 0.00005;
+    for (int index = 0 ; index < 200; ++index) {
+        lstm_neural_network_learning_step(lstm_network);
+    }
+
+    for (int cell_index = 0; cell_index < lstm_network->next->cells_count; cell_index++) {
+        assert(forecast_vector[cell_index][0] == lstm_network->next->lstm_cells[cell_index].hidden_state[0]);
+        assert(forecast_vector[cell_index][1] == lstm_network->next->lstm_cells[cell_index].hidden_state[1]);
+    }
+    lstm_neural_network_full_mean_squared_error_calculation(lstm_network);
+    printf("MSE %1.15f\n", lstm_network->next->full_mean_squared_error);
+    lstm_neural_network_destroy(lstm_network->next);
+    lstm_neural_network_destroy(lstm_network);
+    free(lstm_network->next);
+    free(lstm_network);
+}
+
 int main() {
     srand(time(NULL));
     assert_lstm_network_pass_inputs(cells_count_pass_inputs, inputs_count_create_cell_pass_inputs, nodes_count_create_cell_pass_inputs);
     assert_lstm_network_forward_propagation(cells_count_nn, inputs_count_create_cell_nn, nodes_count_create_cell_nn);
+    assert_double_lstm_network_forward_propagation(cells_count_nn, inputs_count_create_cell_nn, nodes_count_create_cell_nn);
     return 0;
 }

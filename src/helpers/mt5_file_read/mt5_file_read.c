@@ -124,11 +124,12 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 			mt5file->lines[line_index].has_not_error = false;
 		}
 	}
-	fclose(mt5file->file);
+
 	free(strtok_buffer);
 	free(date_buffer);
 	free(time_buffer);
 	free(file_separator);
+	fclose(mt5file->file);
 }
 
 void mt5_file_print_normalize_array(t_mt5line *mt5line) {

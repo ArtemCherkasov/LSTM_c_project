@@ -8,6 +8,8 @@
 typedef struct LSTMNeuralNetwork t_lstm_neural_network;
 
 struct LSTMNeuralNetwork {
+	int index;
+	int learning_step_index;
 	int cells_count;
 	int inputs_count_per_cell;
 	int nodes_count_per_cell;
@@ -18,8 +20,10 @@ struct LSTMNeuralNetwork {
 	double *expected_outputs;
 	double full_mean_squared_error;
 	double mean_squared_error_from_index;
-	double mean_squared_error_from_index_temp;
+	double mean_squared_error_from_index_temp_for_positive_direction;
+	double mean_squared_error_from_index_temp_for_negative_direction;
 	double learning_rate;
+	t_lstm_neural_network *next;
 };
 
 void lstm_neural_network_init(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell);
