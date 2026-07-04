@@ -61,26 +61,41 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		if (token_price != NULL) {
 			mt5file->lines[line_index].open = atof(token_price);
 			mt5file->lines[line_index].normalize_nn_buffer[OPEN_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
+			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
+				mt5file->lines[line_index].normalize_nn_buffer_diff[OPEN_INDEX] = (mt5file->lines[line_index].normalize_nn_buffer[OPEN_INDEX] - mt5file->lines[line_index - 1].normalize_nn_buffer[OPEN_INDEX])*NORMALIZE_FACTOR_PRICE;
+			}
 		}
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].high = atof(token_price);
 			mt5file->lines[line_index].normalize_nn_buffer[HIGH_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
+			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
+				mt5file->lines[line_index].normalize_nn_buffer_diff[HIGH_INDEX] = (mt5file->lines[line_index].normalize_nn_buffer[HIGH_INDEX] - mt5file->lines[line_index - 1].normalize_nn_buffer[HIGH_INDEX]) * NORMALIZE_FACTOR_PRICE;
+			}
 		}
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].low = atof(token_price);
 			mt5file->lines[line_index].normalize_nn_buffer[LOW_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
+			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
+				mt5file->lines[line_index].normalize_nn_buffer_diff[LOW_INDEX] = (mt5file->lines[line_index].normalize_nn_buffer[LOW_INDEX] - mt5file->lines[line_index - 1].normalize_nn_buffer[LOW_INDEX]) * NORMALIZE_FACTOR_PRICE;
+			}
 		}
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].close = atof(token_price);
 			mt5file->lines[line_index].normalize_nn_buffer[CLOSE_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
+			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
+				mt5file->lines[line_index].normalize_nn_buffer_diff[CLOSE_INDEX] = (mt5file->lines[line_index].normalize_nn_buffer[CLOSE_INDEX] - mt5file->lines[line_index - 1].normalize_nn_buffer[CLOSE_INDEX]) * NORMALIZE_FACTOR_PRICE;
+			}
 		}
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].volume = atof(token_price);
 			mt5file->lines[line_index].normalize_nn_buffer[VOLUME_INDEX] = atof(token_price) / NORMALIZE_FACTOR_VOLUME;
+			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
+				mt5file->lines[line_index].normalize_nn_buffer_diff[VOLUME_INDEX] = mt5file->lines[line_index].normalize_nn_buffer[VOLUME_INDEX] - mt5file->lines[line_index - 1].normalize_nn_buffer[VOLUME_INDEX];
+			}
 		}
 
 		/*
@@ -122,6 +137,8 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		    && mt5file->lines[line_index].close == 0
 		    && mt5file->lines[line_index].volume == 0) {
 			mt5file->lines[line_index].has_not_error = false;
+		} else {
+			mt5file->lines[line_index].has_not_error = true;
 		}
 	}
 

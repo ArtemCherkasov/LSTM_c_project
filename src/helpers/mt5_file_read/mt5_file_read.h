@@ -62,6 +62,7 @@ struct MT5Line {
 	double close;
 	double volume;
 	double normalize_nn_buffer[NORMALIZE_NN_BUFFER_SIZE];
+	double normalize_nn_buffer_diff[NORMALIZE_NN_BUFFER_SIZE];
 };
 
 void mt5_file_init(t_mt5file *mt5file, char *filename);

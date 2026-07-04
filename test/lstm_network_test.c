@@ -210,7 +210,6 @@ void assert_double_lstm_network_forward_propagation(int cellsCount, int inputCou
 
     lstm_cell_set_expected_vector(&lstm_network->next->lstm_cells[0], expected_vector[0]);
     lstm_cell_set_expected_vector(&lstm_network->next->lstm_cells[1], expected_vector[1]);
-
     for (int index = 0 ; index < 50; ++index) {
         lstm_neural_network_learning_step(lstm_network);
     }
@@ -233,7 +232,6 @@ void assert_double_lstm_network_forward_propagation(int cellsCount, int inputCou
         assert(forecast_vector[cell_index][1] == lstm_network->next->lstm_cells[cell_index].hidden_state[1]);
     }
     lstm_neural_network_full_mean_squared_error_calculation(lstm_network);
-    printf("MSE %1.15f\n", lstm_network->next->full_mean_squared_error);
     lstm_neural_network_destroy(lstm_network->next);
     lstm_neural_network_destroy(lstm_network);
     free(lstm_network->next);

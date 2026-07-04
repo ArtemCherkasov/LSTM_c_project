@@ -11,7 +11,7 @@
 
 #define DAYS 20
 #define CELL_COUNT (24*DAYS)
-#define STEP_FORECAST 24
+#define STEP_FORECAST 120
 
 t_main_struct *main_struct;
 t_lstm_neural_network *lstm_network;
@@ -106,13 +106,17 @@ int main(int argc, char *argv[]) {
         int file_finish_row_pointer = 10000;
         for (int row_index = file_row_pointer; row_index < file_finish_row_pointer; row_index++) {
             for (int cell_index = 0; cell_index < CELL_COUNT; cell_index++) {
-                lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].normalize_nn_buffer);
-                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[STEP_FORECAST + row_index + cell_index].normalize_nn_buffer);
+                lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].normalize_nn_buffer_diff);
+                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[STEP_FORECAST + row_index + cell_index].normalize_nn_buffer_diff);
             }
             lstm_neural_network_learning_step(lstm_network);
             lstm_neural_network_forward_propagation(lstm_network);
             lstm_neural_network_full_mean_squared_error_calculation(lstm_network);
             printf("MSE %3.15f\n", lstm_network_last_pointer->full_mean_squared_error);
+            if (main_struct->training_source_file_path != 0 && main_struct->weight_factors_file_path != 0) {
+                printf("\nSave weight factors to %s\n", main_struct->weight_factors_file_path);
+                weight_factors_save_to_file(lstm_network, main_struct);
+            }
         }
     } else if (main_struct->source_to_forecast_file_path != 0) {
         printf("\nForecast mode:\n");
