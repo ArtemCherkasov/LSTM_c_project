@@ -62,15 +62,15 @@ void assert_file_read(char *file_name) {
     assert(day_101053 == file->lines[101053].day);
     assert(hour_101053 == file->lines[101053].hour);
 
-    assert(fabs(open_101053_norm - file->lines[101053].normalize_nn_buffer[OPEN_INDEX]) < EPS);
-    assert(fabs(high_101053_norm - file->lines[101053].normalize_nn_buffer[HIGH_INDEX]) < EPS);
-    assert(fabs(low_101053_norm - file->lines[101053].normalize_nn_buffer[LOW_INDEX]) < EPS);
-    assert(fabs(close_101053_norm - file->lines[101053].normalize_nn_buffer[CLOSE_INDEX]) < EPS);
-    assert(fabs(volume_101053_norm - file->lines[101053].normalize_nn_buffer[VOLUME_INDEX]) < EPS);
-    assert(fabs(year_101053_norm - file->lines[101053].normalize_nn_buffer[YEAR_INDEX]) < EPS);
-    assert(fabs(month_101053_norm - file->lines[101053].normalize_nn_buffer[MONTH_INDEX]) < EPS);
-    assert(fabs(day_101053_norm - file->lines[101053].normalize_nn_buffer[DAY_INDEX]) < EPS);
-    assert(fabs(hour_101053_norm - file->lines[101053].normalize_nn_buffer[HOUR_INDEX]) < EPS);
+    assert(fabs(open_101053_norm - file->lines[101053].normalize_nn_full_buffer[OPEN_INDEX]) < EPS);
+    assert(fabs(high_101053_norm - file->lines[101053].normalize_nn_full_buffer[HIGH_INDEX]) < EPS);
+    assert(fabs(low_101053_norm - file->lines[101053].normalize_nn_full_buffer[LOW_INDEX]) < EPS);
+    assert(fabs(close_101053_norm - file->lines[101053].normalize_nn_full_buffer[CLOSE_INDEX]) < EPS);
+    assert(fabs(volume_101053_norm - file->lines[101053].normalize_nn_full_buffer[VOLUME_INDEX]) < EPS);
+    assert(fabs(year_101053_norm - file->lines[101053].normalize_nn_full_buffer[YEAR_INDEX]) < EPS);
+    assert(fabs(month_101053_norm - file->lines[101053].normalize_nn_full_buffer[MONTH_INDEX]) < EPS);
+    assert(fabs(day_101053_norm - file->lines[101053].normalize_nn_full_buffer[DAY_INDEX]) < EPS);
+    assert(fabs(hour_101053_norm - file->lines[101053].normalize_nn_full_buffer[HOUR_INDEX]) < EPS);
 
     mt5_file_destroy(file);
     free(file);

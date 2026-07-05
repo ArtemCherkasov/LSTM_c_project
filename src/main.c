@@ -64,14 +64,14 @@ int main(int argc, char *argv[]) {
 
     signal(SIGINT, &exit_handler);
     lstm_network = malloc(sizeof(t_lstm_neural_network));
-    lstm_neural_network_init(lstm_network, CELL_COUNT, NORMALIZE_NN_BUFFER_SIZE, NORMALIZE_NN_BUFFER_SIZE);
+    lstm_neural_network_init(lstm_network, CELL_COUNT, NORMALIZE_NN_BUFFER_SIZE, PREDICT_VECTOR_SIZE);
     lstm_network->index = 0;
     lstm_network_first_pointer = lstm_network;
 
     if (main_struct->layers_count > 1) {
         for (int layer_index = 1; layer_index < main_struct->layers_count; layer_index++) {
             lstm_network->next = malloc(sizeof(t_lstm_neural_network));
-            lstm_neural_network_init(lstm_network->next, CELL_COUNT, NORMALIZE_NN_BUFFER_SIZE, NORMALIZE_NN_BUFFER_SIZE);
+            lstm_neural_network_init(lstm_network->next, CELL_COUNT, PREDICT_VECTOR_SIZE, PREDICT_VECTOR_SIZE);
             lstm_network->next->index = layer_index;
             lstm_network = lstm_network->next;
             lstm_network_last_pointer = lstm_network;
@@ -106,8 +106,8 @@ int main(int argc, char *argv[]) {
         int file_finish_row_pointer = 10000;
         for (int row_index = file_row_pointer; row_index < file_finish_row_pointer; row_index++) {
             for (int cell_index = 0; cell_index < CELL_COUNT; cell_index++) {
-                lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].normalize_nn_buffer_diff);
-                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[STEP_FORECAST + row_index + cell_index].normalize_nn_buffer_diff);
+                lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].normalize_nn_full_buffer_diff);
+                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[STEP_FORECAST + row_index + cell_index].normalize_nn_short_buffer_diff);
             }
             lstm_neural_network_learning_step(lstm_network);
             lstm_neural_network_forward_propagation(lstm_network);
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
         }
         int start_row = main_struct->forecast_from_line - CELL_COUNT;
         for (int cell_index = 0; cell_index < CELL_COUNT; cell_index++) {
-            lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[start_row + cell_index].normalize_nn_buffer);
+            lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[start_row + cell_index].normalize_nn_full_buffer);
         }
         lstm_neural_network_forward_propagation(lstm_network);
         for (int cell_index = CELL_COUNT - STEP_FORECAST; cell_index < CELL_COUNT; cell_index++) {

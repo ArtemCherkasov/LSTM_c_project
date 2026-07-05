@@ -19,6 +19,7 @@
 #define MT5_DELIMITER_TIME ":"
 
 #define NORMALIZE_NN_BUFFER_SIZE 10
+#define PREDICT_VECTOR_SIZE 5
 #define DAY_INDEX 0
 #define MONTH_INDEX 1
 #define YEAR_INDEX 2
@@ -29,6 +30,11 @@
 #define LOW_INDEX 7
 #define CLOSE_INDEX 8
 #define VOLUME_INDEX 9
+#define SHORT_OPEN_INDEX 0
+#define SHORT_HIGH_INDEX 1
+#define SHORT_LOW_INDEX 2
+#define SHORT_CLOSE_INDEX 3
+#define SHORT_VOLUME_INDEX 4
 #define NORMALIZE_FACTOR_YEAR 10000.0
 #define NORMALIZE_FACTOR_MONTH 100.0
 #define NORMALIZE_FACTOR_DAY 100.0
@@ -61,8 +67,10 @@ struct MT5Line {
 	double low;
 	double close;
 	double volume;
-	double normalize_nn_buffer[NORMALIZE_NN_BUFFER_SIZE];
-	double normalize_nn_buffer_diff[NORMALIZE_NN_BUFFER_SIZE];
+	double normalize_nn_full_buffer[NORMALIZE_NN_BUFFER_SIZE];
+	double normalize_nn_full_buffer_diff[NORMALIZE_NN_BUFFER_SIZE];
+	double normalize_nn_short_buffer[PREDICT_VECTOR_SIZE];
+	double normalize_nn_short_buffer_diff[PREDICT_VECTOR_SIZE];
 };
 
 void mt5_file_init(t_mt5file *mt5file, char *filename);
