@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.10.2)
 project(LSTM_c_project C)
 
 set(CMAKE_C_STANDARD 11)

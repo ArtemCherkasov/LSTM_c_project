@@ -11,7 +11,7 @@
 
 #define DAYS 20
 #define CELL_COUNT (24*DAYS)
-#define STEP_FORECAST 120
+#define STEP_FORECAST 1
 
 t_main_struct *main_struct;
 t_lstm_neural_network *lstm_network;
@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
     main_struct->price_symbol = 0;
     main_struct->learning_rate = 0;
     main_struct->layers_count = 1;
+    main_struct->step_forecasts = STEP_FORECAST;
 
     for (int arg_index = 0; arg_index < argc; arg_index++) {
         if (strcmp(argv[arg_index], "-ts") == 0 || strcmp(argv[arg_index], "--trainingsource") == 0) {
@@ -59,6 +60,9 @@ int main(int argc, char *argv[]) {
         }
         if (strcmp(argv[arg_index], "-lc") == 0 || strcmp(argv[arg_index], "--layerscount") == 0) {
             main_struct->layers_count = atof(argv[arg_index + 1]);
+        }
+        if (strcmp(argv[arg_index], "-sf") == 0 || strcmp(argv[arg_index], "--stepforecast") == 0) {
+            main_struct->step_forecasts = atoi(argv[arg_index + 1]);
         }
     }
 
@@ -107,7 +111,7 @@ int main(int argc, char *argv[]) {
         for (int row_index = file_row_pointer; row_index < file_finish_row_pointer; row_index++) {
             for (int cell_index = 0; cell_index < CELL_COUNT; cell_index++) {
                 lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].normalize_nn_full_buffer_diff);
-                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[STEP_FORECAST + row_index + cell_index].normalize_nn_short_buffer_diff);
+                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[main_struct->step_forecasts + row_index + cell_index].normalize_nn_short_buffer_diff);
             }
             lstm_neural_network_learning_step(lstm_network);
             lstm_neural_network_forward_propagation(lstm_network);

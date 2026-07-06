@@ -14,6 +14,7 @@ struct MainStruct {
 	char *price_symbol;
 	double learning_rate;
 	int layers_count;
+	int step_forecasts;
 };
 
 #endif //LSTM_C_PROJECT_MAIN_STRUCT_H
