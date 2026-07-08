@@ -17,7 +17,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 	char mt5_delimiter_date[] = {MT5_DELIMITER_DATE};
 	char mt5_delimiter_time[] = {MT5_DELIMITER_TIME};
 
-	strcpy(file_separator, FILE_SEPARATOR);
+	strcpy(file_separator, (const char*) FILE_SEPARATOR);
 	mt5file->linesCount = 0;
 	getcwd(mt5file->path, sizeof(mt5file->path));
 	strcat(mt5file->path, file_separator);
@@ -29,11 +29,14 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		printf("\nCould not open file %s\n", mt5file->path);
 	}
 
-	while ((mt5file->tmp_char = getc(mt5file->file)) != EOF) {
+	while (!feof(mt5file->file)) {
+		mt5file->tmp_char = getc(mt5file->file);
 		if (mt5file->tmp_char == '\n') {
 			mt5file->linesCount++;
 		}
 	}
+
+	printf("Lines count %d\n", mt5file->linesCount);
 
 	rewind(mt5file->file);
 	mt5file->lines = malloc(sizeof(t_mt5line) * (mt5file->linesCount + 1));
@@ -41,6 +44,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		mt5file->lines[line_index].buffer = malloc(sizeof(char) * 1024);
 	}
 
+	printf("Start prices parsing\n");
 	for (int line_index = 0; line_index < mt5file->linesCount; line_index++) {
 		fgets(mt5file->lines[line_index].buffer, sizeof(char) * 1024, mt5file->file);
 		strcpy(strtok_buffer, mt5file->lines[line_index].buffer);
@@ -100,7 +104,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		if (token_price != NULL) {
 			mt5file->lines[line_index].volume = atof(token_price);
 			mt5file->lines[line_index].normalize_nn_full_buffer[VOLUME_INDEX] = atof(token_price) / NORMALIZE_FACTOR_VOLUME;
-			mt5file->lines[line_index].normalize_nn_short_buffer[SHORT_VOLUME_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
+			mt5file->lines[line_index].normalize_nn_short_buffer[SHORT_VOLUME_INDEX] = atof(token_price) / NORMALIZE_FACTOR_VOLUME;
 			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
 				mt5file->lines[line_index].normalize_nn_full_buffer_diff[VOLUME_INDEX] = (mt5file->lines[line_index].volume - mt5file->lines[line_index - 1].volume) / NORMALIZE_FACTOR_VOLUME;
 				mt5file->lines[line_index].normalize_nn_short_buffer_diff[SHORT_VOLUME_INDEX] = (mt5file->lines[line_index].volume - mt5file->lines[line_index - 1].volume) / NORMALIZE_FACTOR_VOLUME;
@@ -170,8 +174,7 @@ void mt5_file_print_unormalize_array_from_vector(double *vector) {
 	double high = vector[SHORT_HIGH_INDEX] * NORMALIZE_FACTOR_PRICE;
 	double low = vector[SHORT_LOW_INDEX] * NORMALIZE_FACTOR_PRICE;
 	double close = vector[SHORT_CLOSE_INDEX] * NORMALIZE_FACTOR_PRICE;
-	double volume = vector[SHORT_VOLUME_INDEX] * NORMALIZE_FACTOR_VOLUME;
-	printf("[%1.5f, %1.5f, %1.5f, %1.5f, %5.1f]\n", open, high, low, close, volume);
+	printf("[%1.5f, %1.5f, %1.5f, %1.5f]\n", open, high, low, close);
 }
 
 void mt5_file_destroy(t_mt5file *mt5file) {

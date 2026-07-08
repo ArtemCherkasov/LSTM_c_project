@@ -5,6 +5,7 @@
 #ifndef LSTM_C_PROJECT_LSTM_NEURAL_NETWORK_H
 #define LSTM_C_PROJECT_LSTM_NEURAL_NETWORK_H
 #include "../lstm_cell/lstm_cell.h"
+#define EPS 1e-15
 typedef struct LSTMNeuralNetwork t_lstm_neural_network;
 
 struct LSTMNeuralNetwork {

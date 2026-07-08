@@ -4,6 +4,7 @@
 
 #include "lstm_neural_network.h"
 
+#include <float.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -96,6 +97,13 @@ void lstm_neural_network_mean_squared_error_calculation(t_lstm_neural_network *l
 }
 
 void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) {
+	t_lstm_neural_network *lstm_network_first_pointer = lstm_network;
+	t_lstm_neural_network *lstm_network_last_pointer = lstm_network;
+	while (lstm_network->next != NULL) {
+		lstm_network = lstm_network->next;
+		lstm_network_last_pointer = lstm_network;
+	}
+	lstm_network = lstm_network_first_pointer;
 	while (lstm_network != NULL) {
 		for (int cell_index = 0; cell_index < lstm_network->cells_count; cell_index++) {
 			printf("network %d prepare cell %d\n", lstm_network->index, cell_index);
@@ -106,7 +114,7 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) 
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 					lstm_neural_network_forward_propagation_from_cell_index(lstm_network, cell_index);
 					lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-					lstm_network->mean_squared_error_from_index_temp_for_positive_direction = lstm_network->mean_squared_error_from_index;
+					lstm_network->mean_squared_error_from_index_temp_for_positive_direction = lstm_network_last_pointer->mean_squared_error_from_index;
 					node_weight_recover(&lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index], weight_index);
 
 					//calculate error for negative direction
@@ -114,10 +122,14 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) 
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 					lstm_neural_network_forward_propagation_from_cell_index(lstm_network, cell_index);
 					lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-					lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network->mean_squared_error_from_index;
+					lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network_last_pointer->mean_squared_error_from_index;
 					node_weight_recover(&lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index], weight_index);
 
-					if (lstm_network->mean_squared_error_from_index_temp_for_positive_direction < lstm_network->mean_squared_error_from_index_temp_for_negative_direction) {
+					//printf("MSE common %0.15f MSE positive %0.15f MSE negative %0.15f\n", lstm_network_last_pointer->mean_squared_error_from_index, lstm_network->mean_squared_error_from_index_temp_for_positive_direction, lstm_network->mean_squared_error_from_index_temp_for_negative_direction);
+
+					if ( fabs(lstm_network->mean_squared_error_from_index_temp_for_positive_direction - lstm_network->mean_squared_error_from_index_temp_for_negative_direction) < EPS) {
+						node_set_direction(&lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index], weight_index, IMMUTABLE);
+					} else if (lstm_network->mean_squared_error_from_index_temp_for_positive_direction < lstm_network->mean_squared_error_from_index_temp_for_negative_direction) {
 						node_set_direction(&lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index], weight_index, POSITIVE);
 					}
 				}
@@ -129,7 +141,7 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) 
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 					lstm_neural_network_forward_propagation_from_cell_index(lstm_network, cell_index);
 					lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-					lstm_network->mean_squared_error_from_index_temp_for_positive_direction = lstm_network->mean_squared_error_from_index;
+					lstm_network->mean_squared_error_from_index_temp_for_positive_direction = lstm_network_last_pointer->mean_squared_error_from_index;
 					node_weight_recover(&lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index], weight_index);
 
 					//calculate error for negative direction
@@ -137,10 +149,12 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) 
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 					lstm_neural_network_forward_propagation_from_cell_index(lstm_network, cell_index);
 					lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-					lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network->mean_squared_error_from_index;
+					lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network_last_pointer->mean_squared_error_from_index;
 					node_weight_recover(&lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index], weight_index);
 
-					if (lstm_network->mean_squared_error_from_index_temp_for_positive_direction < lstm_network->mean_squared_error_from_index_temp_for_negative_direction) {
+					if ( fabs(lstm_network->mean_squared_error_from_index_temp_for_positive_direction - lstm_network->mean_squared_error_from_index_temp_for_negative_direction) < EPS) {
+						node_set_direction(&lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index], weight_index, IMMUTABLE);
+					} else if (lstm_network->mean_squared_error_from_index_temp_for_positive_direction < lstm_network->mean_squared_error_from_index_temp_for_negative_direction) {
 						node_set_direction(&lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index], weight_index, POSITIVE);
 					}
 				}
@@ -152,7 +166,7 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) 
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 					lstm_neural_network_forward_propagation_from_cell_index(lstm_network, cell_index);
 					lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-					lstm_network->mean_squared_error_from_index_temp_for_positive_direction = lstm_network->mean_squared_error_from_index;
+					lstm_network->mean_squared_error_from_index_temp_for_positive_direction = lstm_network_last_pointer->mean_squared_error_from_index;
 					node_weight_recover(&lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index], weight_index);
 
 					//calculate error for negative direction
@@ -160,10 +174,12 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) 
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 					lstm_neural_network_forward_propagation_from_cell_index(lstm_network, cell_index);
 					lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-					lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network->mean_squared_error_from_index;
+					lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network_last_pointer->mean_squared_error_from_index;
 					node_weight_recover(&lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index], weight_index);
 
-					if (lstm_network->mean_squared_error_from_index_temp_for_positive_direction < lstm_network->mean_squared_error_from_index_temp_for_negative_direction) {
+					if ( fabs(lstm_network->mean_squared_error_from_index_temp_for_positive_direction - lstm_network->mean_squared_error_from_index_temp_for_negative_direction) < EPS) {
+						node_set_direction(&lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index], weight_index, IMMUTABLE);
+					} else if (lstm_network->mean_squared_error_from_index_temp_for_positive_direction < lstm_network->mean_squared_error_from_index_temp_for_negative_direction) {
 						node_set_direction(&lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index], weight_index, POSITIVE);
 					}
 				}
@@ -175,7 +191,7 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) 
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 					lstm_neural_network_forward_propagation_from_cell_index(lstm_network, cell_index);
 					lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-					lstm_network->mean_squared_error_from_index_temp_for_positive_direction = lstm_network->mean_squared_error_from_index;
+					lstm_network->mean_squared_error_from_index_temp_for_positive_direction = lstm_network_last_pointer->mean_squared_error_from_index;
 					node_weight_recover(&lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index], weight_index);
 
 					//calculate error for negative direction
@@ -183,10 +199,12 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network) 
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 					lstm_neural_network_forward_propagation_from_cell_index(lstm_network, cell_index);
 					lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-					lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network->mean_squared_error_from_index;
+					lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network_last_pointer->mean_squared_error_from_index;
 					node_weight_recover(&lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index], weight_index);
 
-					if (lstm_network->mean_squared_error_from_index_temp_for_positive_direction < lstm_network->mean_squared_error_from_index_temp_for_negative_direction) {
+					if ( fabs(lstm_network->mean_squared_error_from_index_temp_for_positive_direction - lstm_network->mean_squared_error_from_index_temp_for_negative_direction) < EPS) {
+						node_set_direction(&lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index], weight_index, IMMUTABLE);
+					} else if (lstm_network->mean_squared_error_from_index_temp_for_positive_direction < lstm_network->mean_squared_error_from_index_temp_for_negative_direction) {
 						node_set_direction(&lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index], weight_index, POSITIVE);
 					}
 				}

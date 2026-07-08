@@ -44,6 +44,7 @@ double volume_101053_norm = 0.174000;
 
 void assert_file_read(char *file_name) {
     t_mt5file *file = malloc(sizeof(t_mt5file));
+    printf("FILE will be read: %s\n", file_name);
     mt5_file_init(file, file_name);
 
     assert(false == file->lines[0].has_not_error);
@@ -77,6 +78,7 @@ void assert_file_read(char *file_name) {
 }
 
 int main() {
+    printf("0.FILE will be read:\n");
     strcat(path, parent_dir);
     strcat(path, file_separator);
     strcat(path, parent_dir);
