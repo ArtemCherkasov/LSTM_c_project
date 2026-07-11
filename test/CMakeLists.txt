@@ -30,6 +30,7 @@ target_link_libraries(lstm_network_test constants_library)
 target_link_libraries(lstm_network_test m)
 
 target_link_libraries(file_read_test file_read_library)
+target_link_libraries(file_read_test constants_library)
 
 add_test(NAME NodeTests COMMAND node_test)
 add_test(NAME LayerTests COMMAND layer_test)

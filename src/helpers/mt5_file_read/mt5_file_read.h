@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include "../../nn/constants/constants.h"
 
 #ifdef _WIN32
 #define FILE_SEPARATOR "\\"
@@ -17,31 +18,6 @@
 #define MT5_DELIMITER "\t"
 #define MT5_DELIMITER_DATE "."
 #define MT5_DELIMITER_TIME ":"
-
-#define NORMALIZE_NN_BUFFER_SIZE 10
-#define PREDICT_VECTOR_SIZE 5
-#define DAY_INDEX 0
-#define MONTH_INDEX 1
-#define YEAR_INDEX 2
-#define HOUR_INDEX 3
-#define MINUTE_INDEX 4
-#define OPEN_INDEX 5
-#define HIGH_INDEX 6
-#define LOW_INDEX 7
-#define CLOSE_INDEX 8
-#define VOLUME_INDEX 9
-#define SHORT_OPEN_INDEX 0
-#define SHORT_HIGH_INDEX 1
-#define SHORT_LOW_INDEX 2
-#define SHORT_CLOSE_INDEX 3
-#define SHORT_VOLUME_INDEX 4
-#define NORMALIZE_FACTOR_YEAR 10000.0
-#define NORMALIZE_FACTOR_MONTH 100.0
-#define NORMALIZE_FACTOR_DAY 100.0
-#define NORMALIZE_FACTOR_VOLUME 10000.0
-#define NORMALIZE_FACTOR_PRICE 10.0
-#define NORMALIZE_FACTOR_HOUR 100.0
-#define NORMALIZE_FACTOR_MINUTE 100.0
 
 typedef struct MT5File t_mt5file;
 typedef struct MT5Line t_mt5line;
@@ -67,10 +43,10 @@ struct MT5Line {
 	double low;
 	double close;
 	double volume;
-	double normalize_nn_full_buffer[NORMALIZE_NN_BUFFER_SIZE];
-	double normalize_nn_full_buffer_diff[NORMALIZE_NN_BUFFER_SIZE];
-	double normalize_nn_short_buffer[PREDICT_VECTOR_SIZE];
-	double normalize_nn_short_buffer_diff[PREDICT_VECTOR_SIZE];
+	double *normalize_nn_full_buffer;
+	double *normalize_nn_short_buffer;
+	double *full_buffer_diff;
+	double *short_buffer_diff;
 };
 
 void mt5_file_init(t_mt5file *mt5file, char *filename);

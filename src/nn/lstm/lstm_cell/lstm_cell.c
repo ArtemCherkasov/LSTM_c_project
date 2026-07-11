@@ -13,7 +13,11 @@ void lstm_cell_init(t_lstm_cell *lstm_cell, int inputs_count, int node_count_per
 	lstm_cell->node_count_per_single_gate = node_count_per_single_gate;
 	lstm_cell->state_vectors_size = node_count_per_single_gate;
 	lstm_cell->inputs_to_layers_count_without_biases = inputs_count + node_count_per_single_gate;
-	lstm_cell->inputs = malloc(sizeof(double) * inputs_count);
+	if (inputs_count > 0) {
+		lstm_cell->inputs = malloc(sizeof(double) * inputs_count);
+	} else {
+		lstm_cell->inputs = NULL;
+	}
 	lstm_cell->hidden_state_inputs = malloc(sizeof(double) * node_count_per_single_gate);
 	lstm_cell->cell_state_inputs = malloc(sizeof(double) * node_count_per_single_gate);
 	lstm_cell->temp_state_vector = malloc(sizeof(double) * node_count_per_single_gate);
@@ -54,7 +58,9 @@ void lstm_cell_set_expected_vector(t_lstm_cell *lstm_cell, double *inputs) {
 
 void lstm_cell_calculate_all_gates(t_lstm_cell *lstm_cell) {
 	memcpy(lstm_cell->inputs_to_layers, lstm_cell->hidden_state_inputs, sizeof(double) * lstm_cell->state_vectors_size);
-	memcpy(&lstm_cell->inputs_to_layers[lstm_cell->state_vectors_size], lstm_cell->inputs, sizeof(double) * lstm_cell->inputs_count);
+	if (lstm_cell->inputs_count > 0) {
+		memcpy(&lstm_cell->inputs_to_layers[lstm_cell->state_vectors_size], lstm_cell->inputs, sizeof(double) * lstm_cell->inputs_count);
+	}
 	layer_set_inputs(lstm_cell->forget_gate, lstm_cell->inputs_to_layers);
 	layer_set_inputs(lstm_cell->input_gate, lstm_cell->inputs_to_layers);
 	layer_set_inputs(lstm_cell->candidate_cell_state_gate, lstm_cell->inputs_to_layers);

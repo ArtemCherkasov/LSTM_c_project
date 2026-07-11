@@ -45,13 +45,13 @@ void weight_factors_save_to_file(t_lstm_neural_network *lstm_network, t_main_str
 	}
 	fprintf(file, "ITERATION %d\n", lstm_network->learning_step_index);
 	fprintf(file, "MSE %3.20f\n", lstm_network_last_pointer->full_mean_squared_error);
-	fprintf(file, "CELLS %d\n", lstm_network->cells_count);
+	fprintf(file, "CELLS %d\n", lstm_network->cells_count_full);
 	fprintf(file, "NODES PER CELL %d\n", lstm_network->nodes_count_per_cell);
 	/*
 	 *save weight
 	 */
 	while (lstm_network != NULL) {
-		for (int cell_index = 0; cell_index < lstm_network->cells_count; cell_index++) {
+		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
 			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
 				lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
 				lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network->mean_squared_error_from_index;
@@ -122,7 +122,7 @@ void weight_factors_load_from_file(t_lstm_neural_network *lstm_network, t_main_s
 	fgets(buffer, sizeof(char) * 1024, file);
 	fgets(buffer, sizeof(char) * 1024, file);
 	while (lstm_network != NULL) {
-		for (int cell_index = 0; cell_index < lstm_network->cells_count; cell_index++) {
+		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
 			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
 				fgets(buffer, sizeof(char) * 1024, file);
 				token_weight = strtok(buffer, weight_delimiter);

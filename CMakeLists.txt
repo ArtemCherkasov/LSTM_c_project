@@ -21,7 +21,14 @@ add_executable(LSTM_c_project src/main.c
         src/helpers/weight_factors_helper/weight_factors.c
         src/helpers/weight_factors_helper/weight_factors.h
         src/helpers/main_struct/main_struct.c
-        src/helpers/main_struct/main_struct.h)
+        src/helpers/main_struct/main_struct.h
+        src/helpers/predicted_price/predicted_price.c
+        src/helpers/predicted_price/predicted_price.h
+        src/helpers/predicted_vector/predicted_vector.c
+        src/helpers/predicted_vector/predicted_vector.h
+        src/helpers/calendar_vector/calendar_vector.c
+        src/helpers/calendar_vector/calendar_vector.h
+)
 
 target_link_libraries(LSTM_c_project m)
 
