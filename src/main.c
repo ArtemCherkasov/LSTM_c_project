@@ -9,9 +9,10 @@
 #include "helpers/weight_factors_helper/weight_factors.h"
 #include "nn/lstm/lstm_neural_network/lstm_neural_network.h"
 
-#define DAYS 20
+#define DAYS 15
+#define HOURS 24
 #define CELL_COUNT (24*DAYS)
-#define STEP_FORECAST 1
+#define STEP_FORECAST (2*HOURS)
 
 t_main_struct *main_struct;
 t_lstm_neural_network *lstm_network;
@@ -68,14 +69,14 @@ int main(int argc, char *argv[]) {
 
     signal(SIGINT, &exit_handler);
     lstm_network = malloc(sizeof(t_lstm_neural_network));
-    lstm_neural_network_init(lstm_network, CELL_COUNT, PRICE_BUFFER_SIZE, PREDICT_VECTOR_SIZE);
+    lstm_neural_network_init_with_empty_input_vector(lstm_network, CELL_COUNT, PRICE_BUFFER_SIZE, PREDICT_VECTOR_SIZE, main_struct->step_forecasts);
     lstm_network->index = 0;
     lstm_network_first_pointer = lstm_network;
 
     if (main_struct->layers_count > 1) {
         for (int layer_index = 1; layer_index < main_struct->layers_count; layer_index++) {
             lstm_network->next = malloc(sizeof(t_lstm_neural_network));
-            lstm_neural_network_init(lstm_network->next, CELL_COUNT, PREDICT_VECTOR_SIZE, PREDICT_VECTOR_SIZE);
+            lstm_neural_network_init(lstm_network->next, CELL_COUNT + main_struct->step_forecasts, PREDICT_VECTOR_SIZE, PREDICT_VECTOR_SIZE);
             lstm_network->next->index = layer_index;
             lstm_network = lstm_network->next;
             lstm_network_last_pointer = lstm_network;
@@ -85,7 +86,7 @@ int main(int argc, char *argv[]) {
 
     t_mt5file *file = malloc(sizeof(t_mt5file));
     if (main_struct->training_source_file_path != 0) {
-        /*
+        /* Training mode
          * acceptable mean square error MSE 0.0000000002
          */
         printf("\nTraining mode:\n");
@@ -111,6 +112,8 @@ int main(int argc, char *argv[]) {
         for (int row_index = file_row_pointer; row_index < file_finish_row_pointer; row_index++) {
             for (int cell_index = 0; cell_index < CELL_COUNT; cell_index++) {
                 lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].full_buffer_diff);
+            }
+            for (int cell_index = 0; cell_index < (CELL_COUNT + main_struct->step_forecasts); cell_index++) {
                 lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[main_struct->step_forecasts + row_index + cell_index].short_buffer_diff);
             }
             lstm_neural_network_learning_step(lstm_network);
@@ -123,6 +126,9 @@ int main(int argc, char *argv[]) {
             }
         }
     } else if (main_struct->source_to_forecast_file_path != 0) {
+        /*
+         * Forecast mode
+         */
         printf("\nForecast mode:\n");
         mt5_file_init(file, main_struct->source_to_forecast_file_path);
         if (main_struct->weight_factors_file_path != 0) {
