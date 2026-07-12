@@ -6,6 +6,7 @@
 
 #include "helpers/mt5_file_read/mt5_file_read.h"
 #include "helpers/main_struct/main_struct.h"
+#include "helpers/predicted_vector/predicted_vector.h"
 #include "helpers/weight_factors_helper/weight_factors.h"
 #include "nn/lstm/lstm_neural_network/lstm_neural_network.h"
 
@@ -18,6 +19,7 @@ t_main_struct *main_struct;
 t_lstm_neural_network *lstm_network;
 t_lstm_neural_network *lstm_network_first_pointer;
 t_lstm_neural_network *lstm_network_last_pointer;
+t_predicted_vector *predicted_vector;
 
 void exit_handler(int n_signal) {
     printf("\nCODE %d\n", n_signal);
@@ -138,16 +140,28 @@ int main(int argc, char *argv[]) {
             printf("Error: file with weights must be defined! (use -w <FILE> or --weight <FILE>)\n");
             return 0;
         }
+
+        predicted_vector = malloc(sizeof(t_predicted_vector));
+        predicted_vector_init(predicted_vector, main_struct->step_forecasts);
+        predicted_price_init(&predicted_vector->predicted_price[0], &file->lines[main_struct->forecast_from_line -1]);
+
+        printf("\n");
         int start_row = main_struct->forecast_from_line - CELL_COUNT;
         for (int cell_index = 0; cell_index < CELL_COUNT; cell_index++) {
             lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[start_row + cell_index].normalize_nn_full_buffer);
+            if (cell_index == CELL_COUNT - 1) {
+                printf("cell index %d %3.15f %3.15f %3.15f %3.15f\n", cell_index, file->lines[start_row + cell_index].open, file->lines[start_row + cell_index].high, file->lines[start_row + cell_index].low, file->lines[start_row + cell_index].close);
+            }
+
         }
+
         lstm_neural_network_forward_propagation(lstm_network);
-        for (int cell_index = CELL_COUNT - STEP_FORECAST; cell_index < CELL_COUNT; cell_index++) {
-            mt5_file_print_unormalize_array_from_vector(lstm_network_last_pointer->lstm_cells[cell_index].hidden_state);
-        }
+        predicted_vector_get_data_from_lstm_net(predicted_vector, lstm_network_last_pointer);
+        predicted_vector_print(predicted_vector);
     }
+    predicted_vector_destroy(predicted_vector);
     lstm_neural_network_destroy(lstm_network);
+    free(predicted_vector);
     mt5_file_destroy(file);
     free(lstm_network);
     free(file);
