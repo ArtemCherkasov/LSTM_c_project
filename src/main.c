@@ -14,6 +14,7 @@
 #define HOURS 24
 #define CELL_COUNT (24*DAYS)
 #define STEP_FORECAST (2*HOURS)
+#define NEXT_CELL 1
 
 t_main_struct *main_struct;
 t_lstm_neural_network *lstm_network;
@@ -116,7 +117,7 @@ int main(int argc, char *argv[]) {
                 lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].full_buffer_diff);
             }
             for (int cell_index = 0; cell_index < (CELL_COUNT + main_struct->step_forecasts); cell_index++) {
-                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[main_struct->step_forecasts + row_index + cell_index].short_buffer_diff);
+                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[row_index + cell_index + NEXT_CELL].short_buffer_diff);
             }
             lstm_neural_network_learning_step(lstm_network);
             lstm_neural_network_forward_propagation(lstm_network);
