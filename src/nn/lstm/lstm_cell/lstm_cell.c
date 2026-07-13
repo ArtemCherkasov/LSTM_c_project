@@ -107,7 +107,7 @@ void lstm_cell_print_inputs(t_lstm_cell *lstm_cell) {
 
 void lstm_cell_print_any_vector(double *vector, int size) {
 	for (int vector_index = 0; vector_index < size; ++vector_index) {
-		printf("%3.20f ", vector[vector_index]);
+		printf("%3.15f ", vector[vector_index] / NORMALIZE_FACTOR_DIFF);
 	}
 	printf("\n");
 }

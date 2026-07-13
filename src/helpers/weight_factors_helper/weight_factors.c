@@ -53,8 +53,6 @@ void weight_factors_save_to_file(t_lstm_neural_network *lstm_network, t_main_str
 	while (lstm_network != NULL) {
 		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
 			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
-				lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-				lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network->mean_squared_error_from_index;
 				for (int weight_index = 0; weight_index < lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].inputCount; weight_index++) {
 					fprintf(file, "%3.20f ", lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].weights[weight_index]);
 				}

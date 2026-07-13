@@ -31,7 +31,7 @@ void predicted_vector_get_data_from_lstm_net(t_predicted_vector *predicted_vecto
 
 void predicted_vector_print(t_predicted_vector *predicted_vector) {
 	for (int price_index = 0; price_index < predicted_vector->predicted_vector_size; price_index++) {
-		printf("%d) %2.5f %2.5f %2.5f %2.5f\n", price_index, predicted_vector->predicted_price[price_index].open_output, predicted_vector->predicted_price[price_index].high_output, predicted_vector->predicted_price[price_index].low_output, predicted_vector->predicted_price[price_index].close_output);
+		printf("%d) %2.10f %2.10f %2.10f %2.10f\n", price_index, predicted_vector->predicted_price[price_index].open_output, predicted_vector->predicted_price[price_index].high_output, predicted_vector->predicted_price[price_index].low_output, predicted_vector->predicted_price[price_index].close_output);
 	}
 }
 

@@ -18,6 +18,7 @@ void lstm_neural_network_init(t_lstm_neural_network *lstm_network, int cells_cou
 	lstm_network->nodes_count_per_cell = nodes_count_per_cell;
 	lstm_network->inputs_count_per_network = inputs_count_per_cell * cells_count;
 	lstm_network->lstm_cells = malloc(sizeof(t_lstm_cell) * cells_count);
+	lstm_network->mean_squared_error_mul_factor = 1.0;
 	lstm_network->mean_squared_error_from_index = 0;
 	lstm_network->mean_squared_error_from_index_temp_for_negative_direction = 0;
 	lstm_network->full_mean_squared_error = 0;
@@ -38,6 +39,7 @@ void lstm_neural_network_init_with_empty_input_vector(t_lstm_neural_network *lst
 	lstm_network->nodes_count_per_cell = nodes_count_per_cell;
 	lstm_network->inputs_count_per_network = inputs_count_per_cell * cells_count;
 	lstm_network->lstm_cells = malloc(sizeof(t_lstm_cell) * (cells_count + cells_count_forecast));
+	lstm_network->mean_squared_error_mul_factor = 1.0;
 	lstm_network->mean_squared_error_from_index = 0;
 	lstm_network->mean_squared_error_from_index_temp_for_negative_direction = 0;
 	lstm_network->full_mean_squared_error = 0;
@@ -114,10 +116,12 @@ void lstm_neural_network_mean_squared_error_calculation(t_lstm_neural_network *l
 		lstm_network = lstm_network->next;
 	}
 	lstm_network->mean_squared_error_from_index = 0;
+	lstm_network->mean_squared_error_mul_factor = 1.0;
 	for (int cell_index = from_cell_index; cell_index < lstm_network->cells_count_full; cell_index++) {
 		for (int node_index = 0; node_index < lstm_network->nodes_count_per_cell; node_index++) {
-			lstm_network->mean_squared_error_from_index = lstm_network->mean_squared_error_from_index + pow(lstm_network->lstm_cells[cell_index].hidden_state[node_index] - lstm_network->lstm_cells[cell_index].expected_outputs[node_index], 2);
+			lstm_network->mean_squared_error_from_index = lstm_network->mean_squared_error_from_index + pow(lstm_network->lstm_cells[cell_index].hidden_state[node_index] - lstm_network->lstm_cells[cell_index].expected_outputs[node_index], 2) * lstm_network->mean_squared_error_mul_factor;
 		}
+		lstm_network->mean_squared_error_mul_factor = lstm_network->mean_squared_error_mul_factor / 100.0;
 	}
 	lstm_network->mean_squared_error_from_index = lstm_network->mean_squared_error_from_index / ((lstm_network->cells_count_full - from_cell_index) * lstm_network->nodes_count_per_cell);
 }
@@ -247,9 +251,7 @@ void lstm_neural_network_learning_step(t_lstm_neural_network *lstm_network) {
 	while (lstm_network != NULL) {
 		printf("Learning action start.\n");
 		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
-			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
-				lstm_neural_network_mean_squared_error_calculation(lstm_network, cell_index);
-				lstm_network->mean_squared_error_from_index_temp_for_negative_direction = lstm_network->mean_squared_error_from_index;
+			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].forget_gate->nodesCount; node_index++) {
 				for (int weight_index = 0; weight_index < lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].inputCount; weight_index++) {
 					node_action_with_saving_weight(&lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index], weight_index, lstm_network->learning_rate);
 				}

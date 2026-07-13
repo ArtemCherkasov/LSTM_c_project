@@ -22,6 +22,7 @@ struct LSTMNeuralNetwork {
 	double *predicted_outputs;
 	double *expected_outputs;
 	double full_mean_squared_error;
+	double mean_squared_error_mul_factor;
 	double mean_squared_error_from_index;
 	double mean_squared_error_from_index_temp_for_positive_direction;
 	double mean_squared_error_from_index_temp_for_negative_direction;
