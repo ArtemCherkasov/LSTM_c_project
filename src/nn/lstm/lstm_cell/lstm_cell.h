@@ -27,6 +27,17 @@ struct LSTMCell {
 	double *inputs;
 	double *inputs_to_layers;
 	double *expected_outputs;
+	double *d_e_d_h;
+	double *prev_d_e_d_hidden;
+	double *prev_d_e_d_input;
+	double *d_e_d_output_gate_vector;
+	double *d_e_d_cell_state_vector;
+	double *prev_d_e_d_cell_state_vector;
+	double *d_e_d_input_gate_vector;
+	double *d_e_d_candidate_cell_state_gate_vector;
+	double *d_e_d_forget_gate_vector;
+	double *cell_state_tanh;
+	double *cell_state_tanh_derivative;
 };
 
 void lstm_cell_init(t_lstm_cell *lstm_cell, int inputs_count, int node_count_per_single_gate);
@@ -38,6 +49,8 @@ void lstm_cell_calculate_all_gates(t_lstm_cell *lstm_cell);
 void lstm_cell_hadamard_product(double *a, double *b, double *dest_vector, int size);
 void lstm_cell_pointwise_addition(double *a, double *b, double *dest_vector, int size);
 void lstm_cell_tanh_cell_state_to_temp_vector(t_lstm_cell *lstm_cell);
+void lstm_cell_tanh_vector(double *src_vector, double *dest_vector, int size);
+void lstm_cell_tanh_derivative_vector(double *src_vector, double *dest_vector, int size);
 void lstm_cell_forward_propagation(t_lstm_cell *lstm_cell);
 void lstm_cell_print_inputs(t_lstm_cell *lstm_cell);
 void lstm_cell_print_any_vector(double *vector, int size);

@@ -18,6 +18,7 @@ struct Layer {
     t_bias *biases;
     double *inputs_buffer;
     double *output;
+    double *output_derivative;
 };
 
 void layer_init(t_layer *layer, int inputsCount, int nodesCount, int biasesCount);

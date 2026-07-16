@@ -29,6 +29,23 @@ void lstm_cell_init(t_lstm_cell *lstm_cell, int inputs_count, int node_count_per
 	lstm_cell->hidden_state = malloc(sizeof(double) * node_count_per_single_gate);
 	lstm_cell->cell_state = malloc(sizeof(double) * node_count_per_single_gate);
 	lstm_cell->expected_outputs = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->d_e_d_h = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->prev_d_e_d_hidden = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->prev_d_e_d_input = malloc(sizeof(double) * inputs_count);
+	for (int state_index = 0; state_index < node_count_per_single_gate; state_index++) {
+		lstm_cell->prev_d_e_d_hidden[state_index] = 0.0;
+	}
+	for (int input_index = 0; input_index < inputs_count; input_index++) {
+		lstm_cell->prev_d_e_d_input[input_index] = 0.0;
+	}
+	lstm_cell->d_e_d_output_gate_vector = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->d_e_d_cell_state_vector = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->prev_d_e_d_cell_state_vector = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->d_e_d_input_gate_vector = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->d_e_d_candidate_cell_state_gate_vector = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->d_e_d_forget_gate_vector = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->cell_state_tanh = malloc(sizeof(double) * node_count_per_single_gate);
+	lstm_cell->cell_state_tanh_derivative = malloc(sizeof(double) * node_count_per_single_gate);
 	lstm_cell->inputs_to_layers = malloc(sizeof(double) * lstm_cell->inputs_to_layers_count_without_biases);
 	lstm_cell->forget_gate = malloc(sizeof(t_layer));
 	lstm_cell->input_gate = malloc(sizeof(t_layer));
@@ -89,6 +106,17 @@ void lstm_cell_tanh_cell_state_to_temp_vector(t_lstm_cell *lstm_cell) {
 	}
 }
 
+void lstm_cell_tanh_vector(double *src_vector, double *dest_vector, int size) {
+	for (int vector_index = 0; vector_index < size; ++vector_index) {
+		dest_vector[vector_index] = tanh(src_vector[vector_index]);
+	}
+}
+void lstm_cell_tanh_derivative_vector(double *src_vector, double *dest_vector, int size) {
+	for (int vector_index = 0; vector_index < size; ++vector_index) {
+		dest_vector[vector_index] = 1 - pow(tanh(src_vector[vector_index]), 2);
+	}
+}
+
 void lstm_cell_forward_propagation(t_lstm_cell *lstm_cell) {
 	lstm_cell_calculate_all_gates(lstm_cell);
 	lstm_cell_hadamard_product(lstm_cell->forget_gate->output, lstm_cell->cell_state_inputs, lstm_cell->cell_state, lstm_cell->state_vectors_size);
@@ -107,7 +135,7 @@ void lstm_cell_print_inputs(t_lstm_cell *lstm_cell) {
 
 void lstm_cell_print_any_vector(double *vector, int size) {
 	for (int vector_index = 0; vector_index < size; ++vector_index) {
-		printf("%3.15f ", vector[vector_index] / NORMALIZE_FACTOR_DIFF);
+		printf("%3.15f ", vector[vector_index]);
 	}
 	printf("\n");
 }
@@ -130,4 +158,15 @@ void lstm_cell_destroy(t_lstm_cell *lstm_cell) {
 	free(lstm_cell->input_gate);
 	free(lstm_cell->candidate_cell_state_gate);
 	free(lstm_cell->output_gate);
+	free(lstm_cell->d_e_d_h);
+	free(lstm_cell->d_e_d_output_gate_vector);
+	free(lstm_cell->d_e_d_cell_state_vector);
+	free(lstm_cell->d_e_d_input_gate_vector);
+	free(lstm_cell->d_e_d_candidate_cell_state_gate_vector);
+	free(lstm_cell->d_e_d_forget_gate_vector);
+	free(lstm_cell->cell_state_tanh);
+	free(lstm_cell->cell_state_tanh_derivative);
+	free(lstm_cell->prev_d_e_d_hidden);
+	free(lstm_cell->prev_d_e_d_input);
+	free(lstm_cell->prev_d_e_d_cell_state_vector);
 }

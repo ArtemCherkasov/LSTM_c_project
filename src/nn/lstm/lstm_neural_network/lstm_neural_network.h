@@ -19,14 +19,13 @@ struct LSTMNeuralNetwork {
 	int inputs_count_per_network;
 	int outputs_count_per_network;
 	t_lstm_cell *lstm_cells;
-	double *predicted_outputs;
-	double *expected_outputs;
 	double full_mean_squared_error;
 	double mean_squared_error_mul_factor;
 	double mean_squared_error_from_index;
 	double mean_squared_error_from_index_temp_for_positive_direction;
 	double mean_squared_error_from_index_temp_for_negative_direction;
 	double learning_rate;
+	t_lstm_neural_network *prev;
 	t_lstm_neural_network *next;
 };
 
@@ -39,5 +38,7 @@ void lstm_neural_network_full_mean_squared_error_calculation(t_lstm_neural_netwo
 void lstm_neural_network_mean_squared_error_calculation(t_lstm_neural_network *lstm_network, int from_cell_index);
 void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_learning_step(t_lstm_neural_network *lstm_network);
+void lstm_neural_network_mean_squared_error_calculation_bptt(t_lstm_neural_network *lstm_network);
+void lstm_neural_network_learning_step_bptt(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_destroy(t_lstm_neural_network *lstm_network);
 #endif //LSTM_C_PROJECT_LSTM_NEURAL_NETWORK_H

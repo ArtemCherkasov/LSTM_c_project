@@ -49,6 +49,8 @@ void node_set_direction(t_node *node, int weight_index, t_direction direction);
 
 void node_action_with_saving_weight(t_node *node, int weight_index, double weight_delta_value);
 
+void node_action_simple(t_node *node, int weight_index, double weight_delta_value);
+
 void node_weight_recover(t_node *node, int weight_index);
 
 void node_init_directions(t_node *node);

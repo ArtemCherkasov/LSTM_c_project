@@ -3,6 +3,7 @@
 //
 #include "layer.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +17,7 @@ void layer_init(t_layer *layer, int inputsCount, int nodesCount, int biasesCount
     layer->biases = (t_bias *) malloc(sizeof(t_bias) * biasesCount);
     layer->inputs_buffer = (double *) malloc(sizeof(double) * (inputsCount + biasesCount));
     layer->output = malloc(sizeof(double) * nodesCount);
+    layer->output_derivative = malloc(sizeof(double) * nodesCount);
     for (int nodeIndex = 0; nodeIndex < layer->nodesCount; ++nodeIndex) {
         node_init(&layer->nodes[nodeIndex], inputsCount + biasesCount);
     }
@@ -32,6 +34,7 @@ void layer_destroy(t_layer *layer) {
     free(layer->biases);
     free(layer->inputs_buffer);
     free(layer->output);
+    free(layer->output_derivative);
 }
 
 void layer_set_inputs(t_layer *layer, double *inputs) {
@@ -48,6 +51,7 @@ void layer_calculate_sigma_output(t_layer *layer) {
     for (int nodeIndex = 0; nodeIndex < layer->nodesCount; ++nodeIndex) {
         node_self_value_sigma_calculation(&layer->nodes[nodeIndex]);
         layer->output[nodeIndex] = layer->nodes[nodeIndex].nodeValue;
+        layer->output_derivative[nodeIndex] = layer->output[nodeIndex] * (1 - layer->output[nodeIndex]);
     }
 }
 
@@ -55,5 +59,6 @@ void layer_calculate_tanh_output(t_layer *layer) {
     for (int nodeIndex = 0; nodeIndex < layer->nodesCount; ++nodeIndex) {
         node_self_value_tanh_calculation(&layer->nodes[nodeIndex]);
         layer->output[nodeIndex] = layer->nodes[nodeIndex].nodeValue;
+        layer->output_derivative[nodeIndex] = 1.0 / pow(cosh(layer->output[nodeIndex]), 2.0);
     }
 }

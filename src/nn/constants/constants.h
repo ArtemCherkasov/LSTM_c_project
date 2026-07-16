@@ -34,4 +34,5 @@ extern const double NORMALIZE_FACTOR_PRICE;
 extern const double NORMALIZE_FACTOR_HOUR;
 extern const double NORMALIZE_FACTOR_MINUTE;
 extern const double NORMALIZE_FACTOR_DIFF;
+extern const double PREV_HIDDEN_STATE_FACTOR;
 #endif //LSTM_C_PROJECT_CONSTANTS_H

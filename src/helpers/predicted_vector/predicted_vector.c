@@ -21,10 +21,10 @@ void predicted_vector_get_data_from_lstm_net(t_predicted_vector *predicted_vecto
 			predicted_vector->predicted_price[predicted_price_index].low = predicted_vector->predicted_price[predicted_price_index - 1].low_output;
 			predicted_vector->predicted_price[predicted_price_index].close = predicted_vector->predicted_price[predicted_price_index - 1].close_output;
 		}
-		predicted_vector->predicted_price[predicted_price_index].open_output = predicted_vector->predicted_price[predicted_price_index].open + lstm_network->lstm_cells[cell_index].hidden_state[0];
-		predicted_vector->predicted_price[predicted_price_index].high_output = predicted_vector->predicted_price[predicted_price_index].high + lstm_network->lstm_cells[cell_index].hidden_state[1];
-		predicted_vector->predicted_price[predicted_price_index].low_output = predicted_vector->predicted_price[predicted_price_index].low + lstm_network->lstm_cells[cell_index].hidden_state[2];
-		predicted_vector->predicted_price[predicted_price_index].close_output = predicted_vector->predicted_price[predicted_price_index].close + lstm_network->lstm_cells[cell_index].hidden_state[3];
+		predicted_vector->predicted_price[predicted_price_index].open_output = predicted_vector->predicted_price[predicted_price_index].open + lstm_network->lstm_cells[cell_index].hidden_state[0] / NORMALIZE_FACTOR_DIFF;
+		predicted_vector->predicted_price[predicted_price_index].high_output = predicted_vector->predicted_price[predicted_price_index].high + lstm_network->lstm_cells[cell_index].hidden_state[1] / NORMALIZE_FACTOR_DIFF;
+		predicted_vector->predicted_price[predicted_price_index].low_output = predicted_vector->predicted_price[predicted_price_index].low + lstm_network->lstm_cells[cell_index].hidden_state[2] / NORMALIZE_FACTOR_DIFF;
+		predicted_vector->predicted_price[predicted_price_index].close_output = predicted_vector->predicted_price[predicted_price_index].close + lstm_network->lstm_cells[cell_index].hidden_state[3] / NORMALIZE_FACTOR_DIFF;
 		predicted_price_index++;
 	}
 }

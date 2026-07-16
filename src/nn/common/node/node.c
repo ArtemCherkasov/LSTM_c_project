@@ -77,6 +77,10 @@ void node_action_with_saving_weight(t_node *node, int weight_index, double weigh
     }
 }
 
+void node_action_simple(t_node *node, int weight_index, double weight_delta_value) {
+    node->weights[weight_index] = node->weights[weight_index] - weight_delta_value;
+}
+
 void node_weight_recover(t_node *node, int weight_index) {
     node->weights[weight_index] = node->tempWeigth;
 }
