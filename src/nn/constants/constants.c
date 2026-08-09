@@ -31,5 +31,6 @@ const double NORMALIZE_FACTOR_PRICE = 10.0;
 const double NORMALIZE_FACTOR_HOUR = 100.0;
 const double NORMALIZE_FACTOR_MINUTE = 100.0;
 const double NORMALIZE_FACTOR_DIFF = 100.0;
-const double PREV_HIDDEN_STATE_FACTOR = 0.5;
+const double HIDDEN_STATE_FACTOR = 1.0;
+const double CORRECTION_TO_SIGMA_MIDDLE = 0.0;
 const double EPS = 1e-15;

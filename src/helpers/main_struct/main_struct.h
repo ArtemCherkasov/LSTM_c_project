@@ -16,7 +16,10 @@ struct MainStruct {
 	double learning_rate;
 	int layers_count;
 	int step_forecasts;
+	int forecasts_gap;
 	int cell_count;
 };
+
+void print_main_struct_info(t_main_struct *main_struct);
 
 #endif //LSTM_C_PROJECT_MAIN_STRUCT_H

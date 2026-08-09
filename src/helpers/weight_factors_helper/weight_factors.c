@@ -80,6 +80,70 @@ void weight_factors_save_to_file(t_lstm_neural_network *lstm_network, t_main_str
 		lstm_network = lstm_network->next;
 	}
 
+	/*
+	 * Save cell state info
+	 */
+	lstm_network = lstm_network_first_pointer;
+	fprintf(file, "\n\nCell state:\n");
+	while (lstm_network != NULL) {
+		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
+			fprintf(file, "cell %d\n", cell_index);
+			for (int state_index = 0; state_index < lstm_network->lstm_cells[cell_index].state_vectors_size; state_index++) {
+				fprintf(file, "%3.20f ", lstm_network->lstm_cells[cell_index].cell_state[state_index]);
+			}
+			fprintf(file, "\n");
+		}
+		lstm_network = lstm_network->next;
+	}
+
+	/*
+	 * Save derivative cell state info
+	 */
+	lstm_network = lstm_network_first_pointer;
+	fprintf(file, "\n\ndE/dC:\n");
+	while (lstm_network != NULL) {
+		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
+			fprintf(file, "cell %d\n", cell_index);
+			for (int state_index = 0; state_index < lstm_network->lstm_cells[cell_index].state_vectors_size; state_index++) {
+				fprintf(file, "%3.20f ", lstm_network->lstm_cells[cell_index].d_e_d_cell_state_vector[state_index]);
+			}
+			fprintf(file, "\n");
+		}
+		lstm_network = lstm_network->next;
+	}
+
+	/*
+	 * Save hidden state info
+	 */
+	lstm_network = lstm_network_first_pointer;
+	fprintf(file, "\n\nHidden state:\n");
+	while (lstm_network != NULL) {
+		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
+			fprintf(file, "cell %d\n", cell_index);
+			for (int hidden_index = 0; hidden_index < lstm_network->lstm_cells[cell_index].state_vectors_size; hidden_index++) {
+				fprintf(file, "%3.20f ", lstm_network->lstm_cells[cell_index].cell_state[hidden_index]);
+			}
+			fprintf(file, "\n");
+		}
+		lstm_network = lstm_network->next;
+	}
+
+	/*
+	 * Save derivative hidden state info
+	 */
+	lstm_network = lstm_network_first_pointer;
+	fprintf(file, "\n\ndE/dH:\n");
+	while (lstm_network != NULL) {
+		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
+			fprintf(file, "cell %d\n", cell_index);
+			for (int hidden_index = 0; hidden_index < lstm_network->lstm_cells[cell_index].state_vectors_size; hidden_index++) {
+				fprintf(file, "%3.20f ", lstm_network->lstm_cells[cell_index].d_e_d_h[hidden_index]);
+			}
+			fprintf(file, "\n");
+		}
+		lstm_network = lstm_network->next;
+	}
+
 	fclose(file);
 	free(file_separator);
 }
@@ -120,6 +184,7 @@ void weight_factors_load_from_file(t_lstm_neural_network *lstm_network, t_main_s
 	fgets(buffer, sizeof(char) * 1024, file);
 	fgets(buffer, sizeof(char) * 1024, file);
 	while (lstm_network != NULL) {
+		printf("Cells count %d\n", lstm_network->cells_count_full);
 		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
 			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
 				fgets(buffer, sizeof(char) * 1024, file);

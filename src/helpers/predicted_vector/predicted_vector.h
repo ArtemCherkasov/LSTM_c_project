@@ -15,7 +15,7 @@ struct PredictedVector {
 	int predicted_vector_size;
 };
 
-void predicted_vector_init(t_predicted_vector *predicted_vector, int step_forecasts);
+void predicted_vector_init(t_predicted_vector *predicted_vector, int forecast_gap);
 void predicted_vector_get_data_from_lstm_net(t_predicted_vector *predicted_vector, t_lstm_neural_network *lstm_network);
 void predicted_vector_print(t_predicted_vector *predicted_vector);
 void predicted_vector_destroy(t_predicted_vector *predicted_vector);

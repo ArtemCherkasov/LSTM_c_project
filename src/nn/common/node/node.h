@@ -28,30 +28,20 @@ enum Direction {
 };
 
 void node_init(t_node *node, int inputCount);
-
 void node_generate_weights(t_node *node);
-
 void node_set_weights(t_node *node, double *weigths);
-
 void node_destroy(t_node *node);
-
 void node_set_input(t_node *node, double *input);
-
 double node_sigma_activation(double summ);
-
 void node_self_sum_calculation(t_node *node);
-
 void node_self_value_sigma_calculation(t_node *node);
-
 void node_self_value_tanh_calculation(t_node *node);
-
 void node_set_direction(t_node *node, int weight_index, t_direction direction);
-
 void node_action_with_saving_weight(t_node *node, int weight_index, double weight_delta_value);
-
-void node_action_simple(t_node *node, int weight_index, double weight_delta_value);
-
+void node_action_simple(t_node *node);
 void node_weight_recover(t_node *node, int weight_index);
-
 void node_init_directions(t_node *node);
+void node_zeroing_delta_vector(t_node *node);
+void node_add_value_to_delta(t_node *node, int weight_index, double weight_delta_value);
+void node_average_delta_calculate(t_node *node, int cells_count);
 #endif //LSTM_C_PROJECT_NODE_H

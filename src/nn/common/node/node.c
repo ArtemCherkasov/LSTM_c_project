@@ -77,8 +77,10 @@ void node_action_with_saving_weight(t_node *node, int weight_index, double weigh
     }
 }
 
-void node_action_simple(t_node *node, int weight_index, double weight_delta_value) {
-    node->weights[weight_index] = node->weights[weight_index] - weight_delta_value;
+void node_action_simple(t_node *node) {
+    for (int weight_index = 0; weight_index < node->inputCount; ++weight_index) {
+        node->weights[weight_index] = node->weights[weight_index] - node->deltaOfWeight[weight_index];
+    }
 }
 
 void node_weight_recover(t_node *node, int weight_index) {
@@ -88,5 +90,21 @@ void node_weight_recover(t_node *node, int weight_index) {
 void node_init_directions(t_node *node) {
     for (int directionIndex = 0; directionIndex < node->inputCount; ++directionIndex) {
         node->directions[directionIndex] = IMMUTABLE;
+    }
+}
+
+void node_zeroing_delta_vector(t_node *node) {
+    for (int inputIndex = 0; inputIndex < node->inputCount; ++inputIndex) {
+        node->deltaOfWeight[inputIndex] = 0.0;
+    }
+}
+
+void node_add_value_to_delta(t_node *node, int weight_index, double weight_delta_value) {
+    node->deltaOfWeight[weight_index] = node->deltaOfWeight[weight_index] + weight_delta_value;
+}
+
+void node_average_delta_calculate(t_node *node, int cells_count) {
+    for (int inputIndex = 0; inputIndex < node->inputCount; ++inputIndex) {
+        node->deltaOfWeight[inputIndex] = node->deltaOfWeight[inputIndex] / cells_count;
     }
 }

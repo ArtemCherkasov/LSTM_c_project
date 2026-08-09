@@ -31,6 +31,7 @@ struct LSTMNeuralNetwork {
 
 void lstm_neural_network_init(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell);
 void lstm_neural_network_init_with_empty_input_vector(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell, int cells_count_forecast);
+void lstm_neural_network_duplication_weights_from_first_cell(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_set_input(t_lstm_neural_network *lstm_network, double* inputs);
 void lstm_neural_network_forward_propagation(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_forward_propagation_from_cell_index(t_lstm_neural_network *lstm_network, int from_cell_index);
