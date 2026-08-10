@@ -320,7 +320,7 @@ void lstm_neural_network_mean_squared_error_calculation_bptt(t_lstm_neural_netwo
 	lstm_network->mean_squared_error_from_index = 0;
 	for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
 		for (int node_index = 0; node_index < lstm_network->nodes_count_per_cell; node_index++) {
-			lstm_network->lstm_cells[cell_index].d_e_d_h[node_index] = -1.0 *(lstm_network->lstm_cells[cell_index].expected_outputs[node_index] - lstm_network->lstm_cells[cell_index].hidden_state[node_index]);
+			lstm_network->lstm_cells[cell_index].d_e_d_h[node_index] = -1.0 * (lstm_network->lstm_cells[cell_index].expected_outputs[node_index] - lstm_network->lstm_cells[cell_index].hidden_state[node_index]);
 		}
 	}
 }
@@ -392,27 +392,39 @@ void lstm_neural_network_learning_step_bptt(t_lstm_neural_network *lstm_network)
 			for (int weight_index = lstm_network->lstm_cells[cell_index].node_count_per_single_gate; weight_index < lstm_network->lstm_cells[cell_index].inputs_to_layers_count_without_biases; weight_index++) {
 				lstm_network->lstm_cells[cell_index].prev_d_e_d_input[weight_index - lstm_network->lstm_cells[cell_index].node_count_per_single_gate] = 0.0;
 			}
+			
+			//calculate delta of node
 			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
 				lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].deltaOfNode = lstm_network->lstm_cells[cell_index].d_e_d_forget_gate_vector[node_index] * lstm_network->lstm_cells[cell_index].forget_gate->output_derivative[node_index];
 				lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].deltaOfNode = lstm_network->lstm_cells[cell_index].d_e_d_input_gate_vector[node_index] * lstm_network->lstm_cells[cell_index].input_gate->output_derivative[node_index];
 				lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].deltaOfNode = lstm_network->lstm_cells[cell_index].d_e_d_candidate_cell_state_gate_vector[node_index] * lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->output_derivative[node_index];
 				lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].deltaOfNode = lstm_network->lstm_cells[cell_index].d_e_d_output_gate_vector[node_index] * lstm_network->lstm_cells[cell_index].output_gate->output_derivative[node_index];
+			}
 
-				for (int weight_index = 0; weight_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; weight_index++) {
-					lstm_network->lstm_cells[cell_index].prev_d_e_d_hidden[weight_index] += lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].weights[weight_index]
-							+ lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].weights[weight_index]
-							+ lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].weights[weight_index]
-							+ lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].weights[weight_index];
-					lstm_network->lstm_cells[cell_index].prev_d_e_d_hidden[weight_index] *= HIDDEN_STATE_FACTOR;
+			//calculate derivatives prev hidden state
+			for (int hidden_state_index = 0; hidden_state_index < lstm_network->lstm_cells[cell_index].state_vectors_size; hidden_state_index++) {
+				for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
+					lstm_network->lstm_cells[cell_index].prev_d_e_d_hidden[hidden_state_index] += lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].weights[hidden_state_index]
+							+ lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].weights[hidden_state_index]
+							+ lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].weights[hidden_state_index]
+							+ lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].weights[hidden_state_index];
+					//lstm_network->lstm_cells[cell_index].prev_d_e_d_hidden[hidden_state_index] *= HIDDEN_STATE_FACTOR;
 				}
-				for (int weight_index = lstm_network->lstm_cells[cell_index].node_count_per_single_gate; weight_index < lstm_network->lstm_cells[cell_index].inputs_to_layers_count_without_biases; weight_index++) {
-					lstm_network->lstm_cells[cell_index].prev_d_e_d_input[weight_index - lstm_network->lstm_cells[cell_index].node_count_per_single_gate] += lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].weights[weight_index]
-							+ lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].weights[weight_index]
-							+ lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].weights[weight_index]
-							+ lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].weights[weight_index];
-					lstm_network->lstm_cells[cell_index].prev_d_e_d_input[weight_index - lstm_network->lstm_cells[cell_index].node_count_per_single_gate] *= HIDDEN_STATE_FACTOR;
+			}
+
+			//calculate derivatives prev inputs to cell
+			for (int input_to_cell_index = 0; input_to_cell_index < lstm_network->lstm_cells[cell_index].inputs_count; input_to_cell_index++) {
+				for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
+					lstm_network->lstm_cells[cell_index].prev_d_e_d_input[input_to_cell_index] += lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].weights[lstm_network->lstm_cells[cell_index].state_vectors_size + input_to_cell_index]
+							+ lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].weights[lstm_network->lstm_cells[cell_index].state_vectors_size + input_to_cell_index]
+							+ lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].candidate_cell_state_gate->nodes[node_index].weights[lstm_network->lstm_cells[cell_index].state_vectors_size + input_to_cell_index]
+							+ lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].output_gate->nodes[node_index].weights[lstm_network->lstm_cells[cell_index].state_vectors_size + input_to_cell_index];
+					//lstm_network->lstm_cells[cell_index].prev_d_e_d_input[input_to_cell_index] *= HIDDEN_STATE_FACTOR;
 				}
-				//add delta to weights
+			}
+
+			//add delta to weights
+			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
 				for (int weight_index = 0; weight_index < lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].inputCount; weight_index++) {
 					node_add_value_to_delta(&lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index], weight_index, lstm_network->learning_rate * (lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].forget_gate->nodes[node_index].inputs[weight_index]));
 					node_add_value_to_delta(&lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index], weight_index, lstm_network->learning_rate * (lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].deltaOfNode * lstm_network->lstm_cells[cell_index].input_gate->nodes[node_index].inputs[weight_index]));

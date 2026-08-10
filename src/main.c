@@ -15,10 +15,10 @@
 #define HOURS 24
 #define CELL_COUNT (24*DAYS)
 #define CELL_COUNT_TEST (24*DAYS)
-#define STEP_FORECAST (5*HOURS)
-#define STEP_FORECAST_TEST (5*HOURS)
-#define FORECAST_GAP 24
-#define FORECATS_GAP_TEST_MODE 24
+#define STEP_FORECAST 0
+#define STEP_FORECAST_TEST 0
+#define FORECAST_GAP 1
+#define FORECATS_GAP_TEST_MODE 1
 
 t_main_struct *main_struct;
 t_lstm_neural_network *lstm_network;
@@ -126,7 +126,6 @@ int main(int argc, char *argv[]) {
         if (main_struct->weight_factors_file_path != 0) {
             //weight_factors_load_from_file(lstm_network, main_struct);
         }
-        //lstm_neural_network_duplication_weights_from_first_cell(lstm_network);
 
         if (main_struct->learning_rate != 0) {
             printf("Set learning rate: %0.5f\n", main_struct->learning_rate);
@@ -146,8 +145,8 @@ int main(int argc, char *argv[]) {
             for (int cell_index = 0; cell_index < main_struct->cell_count; cell_index++) {
                 lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].normalize_nn_full_buffer);
             }
-            for (int cell_index = 0; cell_index < (main_struct->cell_count); cell_index++) {
-                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[row_index + cell_index + main_struct->forecasts_gap].normalize_nn_short_buffer);
+            for (int cell_index = 0; cell_index < (main_struct->cell_count + main_struct->step_forecasts); cell_index++) {
+                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[row_index + cell_index + main_struct->forecasts_gap].short_buffer_diff);
             }
             for (int batch_index = 0; batch_index < 10000; batch_index++) {
                 lstm_neural_network_learning_step_bptt(lstm_network);
@@ -162,8 +161,8 @@ int main(int argc, char *argv[]) {
                     lstm_cell_print_any_vector(lstm_network_last_pointer->lstm_cells[cell_index].hidden_state, lstm_network_last_pointer->lstm_cells[cell_index].node_count_per_single_gate);
                 }
                 printf("MSE %3.15f\n", lstm_network_last_pointer->full_mean_squared_error);
-                getchar();
             }
+            getchar();
         }
     } else if (main_struct->training_source_file_path != 0 && main_struct->test_mode == 0) {
         /* Training mode
@@ -174,7 +173,6 @@ int main(int argc, char *argv[]) {
         if (main_struct->weight_factors_file_path != 0) {
             weight_factors_load_from_file(lstm_network, main_struct);
         }
-        //lstm_neural_network_duplication_weights_from_first_cell(lstm_network);
         if (main_struct->learning_rate != 0) {
             printf("Set learning rate: %0.5f\n", main_struct->learning_rate);
             lstm_network->learning_rate = main_struct->learning_rate;
@@ -193,10 +191,10 @@ int main(int argc, char *argv[]) {
             for (int cell_index = 0; cell_index < main_struct->cell_count; cell_index++) {
                 lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[row_index + cell_index].normalize_nn_full_buffer);
             }
-            for (int cell_index = 0; cell_index < (main_struct->cell_count); cell_index++) {
-                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[row_index + cell_index + main_struct->forecasts_gap].normalize_nn_short_buffer);
+            for (int cell_index = 0; cell_index < (main_struct->cell_count + main_struct->step_forecasts); cell_index++) {
+                lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[row_index + cell_index + main_struct->forecasts_gap].short_buffer_diff);
             }
-            for (int batch_index = 0; batch_index < 100; batch_index++) {
+            for (int batch_index = 0; batch_index < 200; batch_index++) {
                 lstm_neural_network_learning_step_bptt(lstm_network);
                 lstm_neural_network_forward_propagation(lstm_network);
             }
@@ -224,7 +222,7 @@ int main(int argc, char *argv[]) {
         }
 
         predicted_vector = malloc(sizeof(t_predicted_vector));
-        predicted_vector_init(predicted_vector, main_struct->forecasts_gap);
+        predicted_vector_init(predicted_vector, main_struct->step_forecasts);
         predicted_price_init(&predicted_vector->predicted_price[0], &file->lines[main_struct->forecast_from_line -1]);
 
         printf("\n");
