@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        int file_row_pointer = 100;
+        int file_row_pointer = 1000;
         int file_finish_row_pointer = 90000;
         for (int row_index = file_row_pointer; row_index < file_finish_row_pointer; row_index++) {
             for (int cell_index = 0; cell_index < main_struct->cell_count; cell_index++) {
@@ -161,8 +161,8 @@ int main(int argc, char *argv[]) {
                     lstm_cell_print_any_vector(lstm_network_last_pointer->lstm_cells[cell_index].hidden_state, lstm_network_last_pointer->lstm_cells[cell_index].node_count_per_single_gate);
                 }
                 printf("MSE %3.15f\n", lstm_network_last_pointer->full_mean_squared_error);
+                getchar();
             }
-            getchar();
         }
     } else if (main_struct->training_source_file_path != 0 && main_struct->test_mode == 0) {
         /* Training mode
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
             for (int cell_index = 0; cell_index < (main_struct->cell_count + main_struct->step_forecasts); cell_index++) {
                 lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], file->lines[row_index + cell_index + main_struct->forecasts_gap].short_buffer_diff);
             }
-            for (int batch_index = 0; batch_index < 200; batch_index++) {
+            for (int batch_index = 0; batch_index < 50; batch_index++) {
                 lstm_neural_network_learning_step_bptt(lstm_network);
                 lstm_neural_network_forward_propagation(lstm_network);
             }
@@ -227,16 +227,17 @@ int main(int argc, char *argv[]) {
 
         printf("\n");
         int start_row = main_struct->forecast_from_line - main_struct->cell_count;
+        int final_cell_index_before_predict = main_struct->cell_count - 1;
         printf("start line from file %d\n", start_row);
         for (int cell_index = 0; cell_index < main_struct->cell_count; cell_index++) {
             lstm_cell_set_inputs(&lstm_network->lstm_cells[cell_index], file->lines[start_row + cell_index].normalize_nn_full_buffer);
             if (cell_index == main_struct->cell_count - 1) {
-                printf("cell index %d [%3.15f %3.15f %3.15f %3.15f]\n", cell_index, file->lines[start_row + cell_index].open, file->lines[start_row + cell_index].high, file->lines[start_row + cell_index].low, file->lines[start_row + cell_index].close);
+
             }
         }
-
         lstm_neural_network_forward_propagation(lstm_network);
-        predicted_vector_get_data_from_lstm_net(predicted_vector, lstm_network_last_pointer);
+        printf("cell index %d, line in file %d\n[%3.15f %3.15f %3.15f %3.15f]\n", final_cell_index_before_predict, start_row + final_cell_index_before_predict, file->lines[start_row + final_cell_index_before_predict].open, file->lines[start_row + final_cell_index_before_predict].high, file->lines[start_row + final_cell_index_before_predict].low, file->lines[start_row + final_cell_index_before_predict].close);
+        predicted_vector_get_data_from_lstm_net(predicted_vector, lstm_network_first_pointer);
         predicted_vector_print(predicted_vector);
         predicted_vector_destroy(predicted_vector);
     }
