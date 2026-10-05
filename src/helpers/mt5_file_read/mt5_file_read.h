@@ -7,6 +7,8 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <time.h>
+
 #include "../../nn/constants/constants.h"
 
 #ifdef _WIN32
@@ -34,6 +36,7 @@ struct MT5Line {
 	bool has_not_error;
 	char *buffer;
 	int day;
+	int wday;
 	int month;
 	int year;
 	int hour;
@@ -43,7 +46,8 @@ struct MT5Line {
 	double low;
 	double close;
 	double volume;
-	double *normalize_nn_full_buffer;
+	double *primary_cell_buffer;
+	double *tail_cell_buffer;
 	double *normalize_nn_short_buffer;
 	double *full_buffer_diff;
 	double *short_buffer_diff;
@@ -53,7 +57,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename);
 void mt5_file_print_normalize_array(t_mt5line *mt5line);
 void mt5_file_print_unormalize_array_from_vector(double *vector);
 void mt5_file_print_full_buffer_diff(t_mt5file *mt5file, int line);
-double mt5_file_transform_value(double vector);
+double mt5_file_transform_value(double value);
 void mt5_file_destroy(t_mt5file *mt5file);
 
 #endif //LSTM_C_PROJECT_MT5_FILE_READ_H

@@ -273,7 +273,7 @@ void assert_double_lstm_network_forward_propagation(int cellsCount, int inputCou
 
 void assert_double_lstm_network_forward_propagation_with_forecast_vector(int cellsCount, int inputCount, int nodesCount, int forecastCellsCount) {
     t_lstm_neural_network *lstm_network = malloc(sizeof(t_lstm_neural_network));
-    lstm_neural_network_init_with_empty_input_vector(lstm_network, cellsCount, inputCount, nodesCount, forecastCellsCount);
+    lstm_neural_network_init_with_empty_tail(lstm_network, cellsCount, inputCount, nodesCount, forecastCellsCount);
     lstm_network->index = 0;
     lstm_network->learning_rate = 0.15;
     lstm_network->next = malloc(sizeof(t_lstm_neural_network));
@@ -374,7 +374,7 @@ void assert_double_lstm_network_forward_propagation_with_forecast_vector(int cel
 
 void assert_double_lstm_network_bptt(int cellsCount, int inputCount, int nodesCount, int forecastCellsCount) {
     t_lstm_neural_network *lstm_network = malloc(sizeof(t_lstm_neural_network));
-    lstm_neural_network_init_with_empty_input_vector(lstm_network, cellsCount, inputCount, nodesCount, forecastCellsCount);
+    lstm_neural_network_init_with_empty_tail(lstm_network, cellsCount, inputCount, nodesCount, forecastCellsCount);
     lstm_network->index = 0;
     lstm_network->learning_rate = 0.15;
     lstm_network->next = malloc(sizeof(t_lstm_neural_network));

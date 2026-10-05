@@ -44,6 +44,7 @@ void lstm_cell_init(t_lstm_cell *lstm_cell, int inputs_count, int node_count_per
 void lstm_cell_set_cell_state_inputs(t_lstm_cell *lstm_cell, double *inputs);
 void lstm_cell_set_hidden_state_inputs(t_lstm_cell *lstm_cell, double *inputs);
 void lstm_cell_set_inputs(t_lstm_cell *lstm_cell, double *inputs);
+void lstm_cell_set_inputs_default(t_lstm_cell *lstm_cell);
 void lstm_cell_set_expected_vector(t_lstm_cell *lstm_cell, double *inputs);
 void lstm_cell_calculate_all_gates(t_lstm_cell *lstm_cell);
 void lstm_cell_hadamard_product(double *a, double *b, double *dest_vector, int size);

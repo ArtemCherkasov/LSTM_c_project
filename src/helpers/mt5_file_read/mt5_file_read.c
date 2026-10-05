@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 void mt5_file_init(t_mt5file *mt5file, char *filename) {
 	char *date_buffer = malloc(sizeof(char) * 16);
@@ -18,6 +19,12 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 	char mt5_delimiter[] = {MT5_DELIMITER};
 	char mt5_delimiter_date[] = {MT5_DELIMITER_DATE};
 	char mt5_delimiter_time[] = {MT5_DELIMITER_TIME};
+	double max_open_positive = 0;
+	double max_open_negative = 0;
+	double max_open_positive_av = 0;
+	double max_open_negative_av = 0;
+	int positive_count = 0;
+	int negative_count = 0;
 
 	strcpy(file_separator, (const char*) FILE_SEPARATOR);
 	mt5file->linesCount = 0;
@@ -45,9 +52,9 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 
 	for (int line_index = 0; line_index < mt5file->linesCount + 1; line_index++) {
 		mt5file->lines[line_index].buffer = malloc(sizeof(char) * 1024);
-		mt5file->lines[line_index].normalize_nn_full_buffer = malloc(sizeof(double) * PRICE_BUFFER_SIZE);
-		mt5file->lines[line_index].normalize_nn_short_buffer = malloc(sizeof(double) * PREDICT_VECTOR_SIZE);
-		mt5file->lines[line_index].full_buffer_diff = malloc(sizeof(double) * PRICE_BUFFER_SIZE);
+		mt5file->lines[line_index].primary_cell_buffer = malloc(sizeof(double) * INPUT_COUNT_PER_CELL);
+		mt5file->lines[line_index].tail_cell_buffer = malloc(sizeof(double) * INPUT_COUNT_PER_TAIL_CELL);
+		mt5file->lines[line_index].full_buffer_diff = malloc(sizeof(double) * INPUT_COUNT_PER_CELL);
 		mt5file->lines[line_index].short_buffer_diff = malloc(sizeof(double) * PREDICT_VECTOR_SIZE);
 	}
 
@@ -70,18 +77,30 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].open = atof(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[OPEN_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
-			mt5file->lines[line_index].normalize_nn_short_buffer[SHORT_OPEN_INDEX] = mt5_file_transform_value(atof(token_price));//atof(token_price) / NORMALIZE_FACTOR_PRICE + CORRECTION_TO_SIGMA_MIDDLE;;
+			mt5file->lines[line_index].primary_cell_buffer[OPEN_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
 			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
 				mt5file->lines[line_index].full_buffer_diff[OPEN_INDEX] = mt5file->lines[line_index].open - mt5file->lines[line_index - 1].open;
 				mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX] = mt5_file_transform_value(mt5file->lines[line_index].open - mt5file->lines[line_index - 1].open);
+				if (max_open_positive < mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX]) {
+					max_open_positive = mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX];
+				}
+				if (max_open_negative > mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX]) {
+					max_open_negative = mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX];
+				}
+				if (mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX] > 0) {
+					positive_count++;
+					max_open_positive_av += mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX];
+				}
+				if (mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX] < 0) {
+					negative_count++;
+					max_open_negative_av += mt5file->lines[line_index].short_buffer_diff[SHORT_OPEN_INDEX];
+				}
 			}
 		}
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].high = atof(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[HIGH_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
-			mt5file->lines[line_index].normalize_nn_short_buffer[SHORT_HIGH_INDEX] = mt5_file_transform_value(atof(token_price));
+			mt5file->lines[line_index].primary_cell_buffer[HIGH_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
 			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
 				mt5file->lines[line_index].full_buffer_diff[HIGH_INDEX] = mt5file->lines[line_index].high - mt5file->lines[line_index - 1].high;
 				mt5file->lines[line_index].short_buffer_diff[SHORT_HIGH_INDEX] = mt5_file_transform_value(mt5file->lines[line_index].high - mt5file->lines[line_index - 1].high);
@@ -90,8 +109,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].low = atof(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[LOW_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
-			mt5file->lines[line_index].normalize_nn_short_buffer[SHORT_LOW_INDEX] = mt5_file_transform_value(atof(token_price));
+			mt5file->lines[line_index].primary_cell_buffer[LOW_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
 			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
 				mt5file->lines[line_index].full_buffer_diff[LOW_INDEX] = mt5file->lines[line_index].low - mt5file->lines[line_index - 1].low;
 				mt5file->lines[line_index].short_buffer_diff[SHORT_LOW_INDEX] = mt5_file_transform_value(mt5file->lines[line_index].low - mt5file->lines[line_index - 1].low);
@@ -100,8 +118,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].close = atof(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[CLOSE_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
-			mt5file->lines[line_index].normalize_nn_short_buffer[SHORT_CLOSE_INDEX] = mt5_file_transform_value(atof(token_price));
+			mt5file->lines[line_index].primary_cell_buffer[CLOSE_INDEX] = atof(token_price) / NORMALIZE_FACTOR_PRICE;
 			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
 				mt5file->lines[line_index].full_buffer_diff[CLOSE_INDEX] = mt5file->lines[line_index].close - mt5file->lines[line_index - 1].close;
 				mt5file->lines[line_index].short_buffer_diff[SHORT_CLOSE_INDEX] = mt5_file_transform_value(mt5file->lines[line_index].close - mt5file->lines[line_index - 1].close);
@@ -110,7 +127,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		token_price = strtok(NULL, mt5_delimiter);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].volume = atof(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[VOLUME_INDEX] = atof(token_price) / NORMALIZE_FACTOR_VOLUME;
+			mt5file->lines[line_index].primary_cell_buffer[VOLUME_INDEX] = atof(token_price) / NORMALIZE_FACTOR_VOLUME;
 			//mt5file->lines[line_index].normalize_nn_short_buffer[SHORT_VOLUME_INDEX] = 0.0; //atof(token_price) / NORMALIZE_FACTOR_VOLUME;
 			if (line_index > 0 && mt5file->lines[line_index - 1].has_not_error) {
 				mt5file->lines[line_index].full_buffer_diff[VOLUME_INDEX] = 0.0; //(mt5file->lines[line_index].volume - mt5file->lines[line_index - 1].volume) / NORMALIZE_FACTOR_VOLUME;
@@ -124,17 +141,20 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		token_price = strtok(date_buffer, mt5_delimiter_date);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].year = atoi(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[YEAR_INDEX] = mt5file->lines[line_index].year / NORMALIZE_FACTOR_YEAR;
+			mt5file->lines[line_index].primary_cell_buffer[YEAR_INDEX] = mt5file->lines[line_index].year / NORMALIZE_FACTOR_YEAR;
+			mt5file->lines[line_index].tail_cell_buffer[YEAR_INDEX] = mt5file->lines[line_index].year / NORMALIZE_FACTOR_YEAR;
 		}
 		token_price = strtok(NULL, mt5_delimiter_date);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].month = atoi(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[MONTH_INDEX] = mt5file->lines[line_index].month / NORMALIZE_FACTOR_MONTH;
+			mt5file->lines[line_index].primary_cell_buffer[MONTH_INDEX] = mt5file->lines[line_index].month / NORMALIZE_FACTOR_MONTH;
+			mt5file->lines[line_index].tail_cell_buffer[MONTH_INDEX] = mt5file->lines[line_index].month / NORMALIZE_FACTOR_MONTH;
 		}
 		token_price = strtok(NULL, mt5_delimiter_date);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].day = atoi(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[DAY_INDEX] = mt5file->lines[line_index].day / NORMALIZE_FACTOR_DAY;
+			mt5file->lines[line_index].primary_cell_buffer[DAY_INDEX] = mt5file->lines[line_index].day / NORMALIZE_FACTOR_DAY;
+			mt5file->lines[line_index].tail_cell_buffer[DAY_INDEX] = mt5file->lines[line_index].day / NORMALIZE_FACTOR_DAY;
 		}
 
 		/*
@@ -142,13 +162,30 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		 */
 		token_price = strtok(time_buffer, mt5_delimiter_time);
 		if (token_price != NULL) {
-			mt5file->lines[line_index].hour = atoi(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[HOUR_INDEX] = mt5file->lines[line_index].hour / NORMALIZE_FACTOR_HOUR;
+			mt5file->lines[line_index].hour = atoi(token_price) + HOUR_SHIFT;
+			mt5file->lines[line_index].primary_cell_buffer[HOUR_INDEX] = mt5file->lines[line_index].hour / NORMALIZE_FACTOR_HOUR;
+			mt5file->lines[line_index].tail_cell_buffer[HOUR_INDEX] = mt5file->lines[line_index].hour / NORMALIZE_FACTOR_HOUR;
 		}
+		struct tm time_struct = {0};
+		time_struct.tm_hour = atoi(token_price);
+		time_struct.tm_mday = mt5file->lines[line_index].day;
+		time_struct.tm_mon = mt5file->lines[line_index].month - 1;
+		time_struct.tm_year = mt5file->lines[line_index].year - 1900;
+		time_t ts_t = mktime(&time_struct);
+		struct tm* time_info = localtime(&ts_t);
+		mt5file->lines[line_index].primary_cell_buffer[WEEKDAY_INDEX] = time_info->tm_wday / NORMALIZE_FACTOR_WEEK_DAY;
+		mt5file->lines[line_index].tail_cell_buffer[WEEKDAY_INDEX] = time_info->tm_wday / NORMALIZE_FACTOR_WEEK_DAY;
+		//printf("hour %d day %d mon %d year %d wday %d \n", time_info->tm_hour, time_info->tm_mday, time_info->tm_mon, time_info->tm_year, time_info->tm_wday);
+
+		time_struct.tm_hour += 1;
+		ts_t = mktime(&time_struct);
+		time_info = localtime(&ts_t);
+		//printf("hour %d day %d mon %d year %d wday %d \n", time_info->tm_hour, time_info->tm_mday, time_info->tm_mon, time_info->tm_year, time_info->tm_wday);
 		token_price = strtok(NULL, mt5_delimiter_time);
 		if (token_price != NULL) {
-			mt5file->lines[line_index].minute = atoi(token_price);
-			mt5file->lines[line_index].normalize_nn_full_buffer[MINUTE_INDEX] = atof(token_price) / NORMALIZE_FACTOR_MINUTE;
+			mt5file->lines[line_index].minute = atoi(token_price) + MINUTE_SHIFT;
+			mt5file->lines[line_index].primary_cell_buffer[MINUTE_INDEX] = mt5file->lines[line_index].minute / NORMALIZE_FACTOR_MINUTE;
+			mt5file->lines[line_index].tail_cell_buffer[MINUTE_INDEX] = mt5file->lines[line_index].minute / NORMALIZE_FACTOR_MINUTE;
 		}
 
 		if (mt5file->lines[line_index].open == 0
@@ -170,8 +207,8 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 }
 
 void mt5_file_print_normalize_array(t_mt5line *mt5line) {
-	for (int index = 0; index < PRICE_BUFFER_SIZE; index++) {
-		printf("%3.4f ", mt5line->normalize_nn_full_buffer[index]);
+	for (int index = 0; index < INPUT_COUNT_PER_CELL; index++) {
+		printf("%3.4f ", mt5line->primary_cell_buffer[index]);
 	}
 }
 
@@ -188,18 +225,15 @@ void mt5_file_print_full_buffer_diff(t_mt5file *mt5file, int line) {
 	printf("[%1.5f, %1.5f, %1.5f, %1.5f]\n", mt5file->lines[line].full_buffer_diff[OPEN_INDEX], mt5file->lines[line].full_buffer_diff[HIGH_INDEX], mt5file->lines[line].full_buffer_diff[LOW_INDEX], mt5file->lines[line].full_buffer_diff[CLOSE_INDEX]);
 }
 
-double mt5_file_transform_value(double vector) {
-	double integer_part;
-	double fractional_part;
-	fractional_part = modf(vector, &integer_part);
-	return fractional_part * NORMALIZE_FACTOR_DIFF + CORRECTION_TO_SIGMA_MIDDLE;
+double mt5_file_transform_value(double value) {
+	return 1.0 / (1.0 + exp(-value * AMOUNT_OF_EXPANSION_SIGMA));
 }
 
 void mt5_file_destroy(t_mt5file *mt5file) {
 	for (int line_index = 0; line_index < mt5file->linesCount + 1; line_index++) {
 		free(mt5file->lines[line_index].buffer);
-		free(mt5file->lines[line_index].normalize_nn_full_buffer);
-		free(mt5file->lines[line_index].normalize_nn_short_buffer);
+		free(mt5file->lines[line_index].primary_cell_buffer);
+		free(mt5file->lines[line_index].tail_cell_buffer);
 		free(mt5file->lines[line_index].full_buffer_diff);
 		free(mt5file->lines[line_index].short_buffer_diff);
 	}

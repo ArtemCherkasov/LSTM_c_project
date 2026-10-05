@@ -62,6 +62,7 @@ void node_destroy(t_node *node) {
     free(node->inputs);
     free(node->weights);
     free(node->deltaOfWeight);
+    free(node->directions);
 }
 
 void node_set_direction(t_node *node, int weight_index, t_direction direction) {

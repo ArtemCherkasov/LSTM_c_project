@@ -32,11 +32,12 @@ void lstm_neural_network_init(t_lstm_neural_network *lstm_network, int cells_cou
 	}
 }
 
-void lstm_neural_network_init_with_empty_input_vector(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell, int cells_count_forecast) {
+void lstm_neural_network_init_with_empty_tail(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell, int cells_count_forecast) {
 	lstm_network->cells_count_without_forecast_cells = cells_count;
 	lstm_network->cells_count_forecast = cells_count_forecast;
 	lstm_network->cells_count_full = cells_count + cells_count_forecast;
 	lstm_network->inputs_count_per_cell = inputs_count_per_cell;
+	lstm_network->inputs_count_per_cell_tail = 0;
 	lstm_network->nodes_count_per_cell = nodes_count_per_cell;
 	lstm_network->inputs_count_per_network = inputs_count_per_cell * cells_count;
 	lstm_network->lstm_cells = malloc(sizeof(t_lstm_cell) * (cells_count + cells_count_forecast));
@@ -52,8 +53,35 @@ void lstm_neural_network_init_with_empty_input_vector(t_lstm_neural_network *lst
 		lstm_network->lstm_cells[cell_index].cell_index = cell_index;
 	}
 	for (int cell_index = lstm_network->cells_count_without_forecast_cells; cell_index < lstm_network->cells_count_full; cell_index++) {
-		lstm_cell_init(&lstm_network->lstm_cells[cell_index], 0, lstm_network->nodes_count_per_cell);
+		lstm_cell_init(&lstm_network->lstm_cells[cell_index], lstm_network->inputs_count_per_cell_tail, lstm_network->nodes_count_per_cell);
 		lstm_network->lstm_cells[cell_index].cell_index = cell_index;
+	}
+}
+
+void lstm_neural_network_init_with_not_empty_tail(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell, int cells_count_forecast, int inputs_count_per_cell_tail) {
+	lstm_network->cells_count_without_forecast_cells = cells_count;
+	lstm_network->cells_count_forecast = cells_count_forecast;
+	lstm_network->cells_count_full = cells_count + cells_count_forecast;
+	lstm_network->inputs_count_per_cell = inputs_count_per_cell;
+	lstm_network->inputs_count_per_cell_tail = inputs_count_per_cell_tail;
+	lstm_network->nodes_count_per_cell = nodes_count_per_cell;
+	lstm_network->inputs_count_per_network = inputs_count_per_cell * cells_count;
+	lstm_network->lstm_cells = malloc(sizeof(t_lstm_cell) * (cells_count + cells_count_forecast));
+	lstm_network->mean_squared_error_mul_factor = 1.0;
+	lstm_network->mean_squared_error_from_index = 0;
+	lstm_network->mean_squared_error_from_index_temp_for_negative_direction = 0;
+	lstm_network->full_mean_squared_error = 0;
+	lstm_network->learning_rate = WEIGHT_DELTA_VALUE;
+	lstm_network->learning_step_index = 0;
+	lstm_network->next = NULL;
+	for (int cell_index = 0; cell_index < lstm_network->cells_count_without_forecast_cells; cell_index++) {
+		lstm_cell_init(&lstm_network->lstm_cells[cell_index], lstm_network->inputs_count_per_cell, lstm_network->nodes_count_per_cell);
+		lstm_network->lstm_cells[cell_index].cell_index = cell_index;
+	}
+	for (int cell_index = lstm_network->cells_count_without_forecast_cells; cell_index < lstm_network->cells_count_full; cell_index++) {
+		lstm_cell_init(&lstm_network->lstm_cells[cell_index], lstm_network->inputs_count_per_cell_tail, lstm_network->nodes_count_per_cell);
+		lstm_network->lstm_cells[cell_index].cell_index = cell_index;
+		lstm_cell_set_inputs_default(&lstm_network->lstm_cells[cell_index]);
 	}
 }
 
@@ -461,6 +489,36 @@ void lstm_neural_network_learning_step_bptt(t_lstm_neural_network *lstm_network)
 	}
 }
 
+void lstm_neural_network_print_input_array(t_lstm_neural_network *lstm_network) {
+	for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
+		printf("[");
+		for (int input_index = 0; input_index < lstm_network->lstm_cells[cell_index].inputs_count; input_index++) {
+			printf("%1.4f ", lstm_network->lstm_cells[cell_index].inputs[input_index]);
+		}
+		printf("]\n");
+	}
+}
+
 void lstm_neural_network_destroy(t_lstm_neural_network *lstm_network) {
-	free(lstm_network->lstm_cells);
+	t_lstm_neural_network *lstm_network_last_pointer = lstm_network;
+	while (lstm_network != NULL) {
+		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
+			lstm_cell_destroy(&lstm_network->lstm_cells[cell_index]);
+		}
+		free(lstm_network->lstm_cells);
+		lstm_network_last_pointer = lstm_network;
+		lstm_network = lstm_network->next;
+	}
+
+	while (lstm_network_last_pointer != NULL) {
+		if (lstm_network_last_pointer->next != NULL) {
+			free(lstm_network_last_pointer->next);
+		}
+		if (lstm_network_last_pointer->prev == NULL) {
+			free(lstm_network_last_pointer);
+			lstm_network_last_pointer = NULL;
+		} else {
+			lstm_network_last_pointer = lstm_network_last_pointer->prev;
+		}
+	}
 }

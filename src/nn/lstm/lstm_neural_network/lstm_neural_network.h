@@ -15,6 +15,7 @@ struct LSTMNeuralNetwork {
 	int cells_count_forecast;
 	int cells_count_full;
 	int inputs_count_per_cell;
+	int inputs_count_per_cell_tail;
 	int nodes_count_per_cell;
 	int inputs_count_per_network;
 	int outputs_count_per_network;
@@ -30,7 +31,8 @@ struct LSTMNeuralNetwork {
 };
 
 void lstm_neural_network_init(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell);
-void lstm_neural_network_init_with_empty_input_vector(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell, int cells_count_forecast);
+void lstm_neural_network_init_with_empty_tail(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell, int cells_count_forecast);
+void lstm_neural_network_init_with_not_empty_tail(t_lstm_neural_network *lstm_network, int cells_count, int inputs_count_per_cell, int nodes_count_per_cell, int cells_count_forecast, int inputs_count_per_cell_tail);
 void lstm_neural_network_duplication_weights_from_first_cell(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_set_input(t_lstm_neural_network *lstm_network, double* inputs);
 void lstm_neural_network_forward_propagation(t_lstm_neural_network *lstm_network);
@@ -41,5 +43,6 @@ void lstm_neural_network_prepare_direction(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_learning_step(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_mean_squared_error_calculation_bptt(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_learning_step_bptt(t_lstm_neural_network *lstm_network);
+void lstm_neural_network_print_input_array(t_lstm_neural_network *lstm_network);
 void lstm_neural_network_destroy(t_lstm_neural_network *lstm_network);
 #endif //LSTM_C_PROJECT_LSTM_NEURAL_NETWORK_H

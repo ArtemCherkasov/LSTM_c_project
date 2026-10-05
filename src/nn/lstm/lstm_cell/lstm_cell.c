@@ -69,6 +69,12 @@ void lstm_cell_set_inputs(t_lstm_cell *lstm_cell, double *inputs) {
 	memcpy(lstm_cell->inputs, inputs, sizeof(double) * lstm_cell->inputs_count);
 }
 
+void lstm_cell_set_inputs_default(t_lstm_cell *lstm_cell) {
+	for (int input_index = 0; input_index < lstm_cell->inputs_count; input_index++) {
+		lstm_cell->inputs[input_index] = 1.0;
+	}
+}
+
 void lstm_cell_set_expected_vector(t_lstm_cell *lstm_cell, double *inputs) {
 	memcpy(lstm_cell->expected_outputs, inputs, sizeof(double) * lstm_cell->state_vectors_size);
 }
