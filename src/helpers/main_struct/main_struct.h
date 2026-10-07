@@ -4,10 +4,12 @@
 
 #ifndef LSTM_C_PROJECT_MAIN_STRUCT_H
 #define LSTM_C_PROJECT_MAIN_STRUCT_H
+#include "../mt5_file_read/mt5_file_read.h"
 typedef struct MainStruct t_main_struct;
 
 struct MainStruct {
 	int test_mode;
+	char *mode;
 	char *training_source_file_path;
 	char *source_to_forecast_file_path;
 	int forecast_from_line;
@@ -18,6 +20,7 @@ struct MainStruct {
 	int step_forecasts;
 	int forecasts_gap;
 	int cell_count;
+	t_mt5file *file;
 };
 
 void print_main_struct_info(t_main_struct *main_struct);

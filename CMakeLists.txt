@@ -28,6 +28,14 @@ add_executable(LSTM_c_project src/main.c
         src/helpers/predicted_vector/predicted_vector.h
         src/helpers/calendar_vector/calendar_vector.c
         src/helpers/calendar_vector/calendar_vector.h
+        src/mode/forecast/forecast_mode.c
+        src/mode/forecast/forecast_mode.h
+        src/mode/training/training_mode.c
+        src/mode/training/training_mode.h
+        src/mode/test/test_mode.c
+        src/mode/test/test_mode.h
+        src/mode/pure_price/pure_price_mode.c
+        src/mode/pure_price/pure_price_mode.h
 )
 
 target_link_libraries(LSTM_c_project m)
