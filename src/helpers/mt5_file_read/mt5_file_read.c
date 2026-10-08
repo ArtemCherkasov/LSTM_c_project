@@ -167,20 +167,18 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 			mt5file->lines[line_index].tail_cell_buffer[HOUR_INDEX] = mt5file->lines[line_index].hour / NORMALIZE_FACTOR_HOUR;
 		}
 		struct tm time_struct = {0};
+		int tm_hour = atoi(token_price);
 		time_struct.tm_hour = atoi(token_price);
 		time_struct.tm_mday = mt5file->lines[line_index].day;
 		time_struct.tm_mon = mt5file->lines[line_index].month - 1;
 		time_struct.tm_year = mt5file->lines[line_index].year - 1900;
 		time_t ts_t = mktime(&time_struct);
 		struct tm* time_info = localtime(&ts_t);
-		mt5file->lines[line_index].primary_cell_buffer[WEEKDAY_INDEX] = time_info->tm_wday / NORMALIZE_FACTOR_WEEK_DAY;
-		mt5file->lines[line_index].tail_cell_buffer[WEEKDAY_INDEX] = time_info->tm_wday / NORMALIZE_FACTOR_WEEK_DAY;
-		//printf("hour %d day %d mon %d year %d wday %d \n", time_info->tm_hour, time_info->tm_mday, time_info->tm_mon, time_info->tm_year, time_info->tm_wday);
+		if (time_info != NULL) {
+			mt5file->lines[line_index].primary_cell_buffer[WEEKDAY_INDEX] = time_info->tm_wday / NORMALIZE_FACTOR_WEEK_DAY;
+			mt5file->lines[line_index].tail_cell_buffer[WEEKDAY_INDEX] = time_info->tm_wday / NORMALIZE_FACTOR_WEEK_DAY;
+		}
 
-		time_struct.tm_hour += 1;
-		ts_t = mktime(&time_struct);
-		time_info = localtime(&ts_t);
-		//printf("hour %d day %d mon %d year %d wday %d \n", time_info->tm_hour, time_info->tm_mday, time_info->tm_mon, time_info->tm_year, time_info->tm_wday);
 		token_price = strtok(NULL, mt5_delimiter_time);
 		if (token_price != NULL) {
 			mt5file->lines[line_index].minute = atoi(token_price) + MINUTE_SHIFT;

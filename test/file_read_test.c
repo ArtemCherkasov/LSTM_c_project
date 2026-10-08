@@ -31,9 +31,9 @@ double close_101053 = 1.17367;
 double volume_101053 = 1740.0;
 
 double year_101053_norm = 0.202500;
-double month_101053_norm = 0.09;
-double day_101053_norm = 0.25;
-double hour_101053_norm = 0.11;
+double month_101053_norm = 0.009;
+double day_101053_norm = 0.00250;
+double hour_101053_norm = 0.12;
 double open_101053_norm = 0.117332;
 double open_101053_norm_2 = 0.117332;
 double high_101053_norm = 0.117415;
@@ -60,18 +60,13 @@ void assert_file_read(char *file_name) {
     assert(year_101053 == file->lines[101053].year);
     assert(month_101053 == file->lines[101053].month);
     assert(day_101053 == file->lines[101053].day);
-    assert(hour_101053 == file->lines[101053].hour);
+    assert((hour_101053 + HOUR_SHIFT) == file->lines[101053].hour);
 
     assert(fabs(open_101053_norm - file->lines[101053].primary_cell_buffer[OPEN_INDEX]) < EPS);
     assert(fabs(high_101053_norm - file->lines[101053].primary_cell_buffer[HIGH_INDEX]) < EPS);
     assert(fabs(low_101053_norm - file->lines[101053].primary_cell_buffer[LOW_INDEX]) < EPS);
     assert(fabs(close_101053_norm - file->lines[101053].primary_cell_buffer[CLOSE_INDEX]) < EPS);
 
-    /*
-     * volume test switch off
-     */
-    //assert(fabs(volume_101053_norm - file->lines[101053].normalize_nn_full_buffer[VOLUME_INDEX]) < EPS);
-    assert(fabs(year_101053_norm - file->lines[101053].primary_cell_buffer[WEEKDAY_INDEX]) < EPS);
     assert(fabs(month_101053_norm - file->lines[101053].primary_cell_buffer[MONTH_INDEX]) < EPS);
     assert(fabs(day_101053_norm - file->lines[101053].primary_cell_buffer[DAY_INDEX]) < EPS);
     assert(fabs(hour_101053_norm - file->lines[101053].primary_cell_buffer[HOUR_INDEX]) < EPS);

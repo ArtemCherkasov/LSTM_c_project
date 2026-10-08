@@ -500,25 +500,13 @@ void lstm_neural_network_print_input_array(t_lstm_neural_network *lstm_network) 
 }
 
 void lstm_neural_network_destroy(t_lstm_neural_network *lstm_network) {
-	t_lstm_neural_network *lstm_network_last_pointer = lstm_network;
 	while (lstm_network != NULL) {
+		t_lstm_neural_network *next = lstm_network->next;
 		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
 			lstm_cell_destroy(&lstm_network->lstm_cells[cell_index]);
 		}
 		free(lstm_network->lstm_cells);
-		lstm_network_last_pointer = lstm_network;
-		lstm_network = lstm_network->next;
-	}
-
-	while (lstm_network_last_pointer != NULL) {
-		if (lstm_network_last_pointer->next != NULL) {
-			free(lstm_network_last_pointer->next);
-		}
-		if (lstm_network_last_pointer->prev == NULL) {
-			free(lstm_network_last_pointer);
-			lstm_network_last_pointer = NULL;
-		} else {
-			lstm_network_last_pointer = lstm_network_last_pointer->prev;
-		}
+		free(lstm_network);
+		lstm_network = next;
 	}
 }

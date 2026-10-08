@@ -127,7 +127,6 @@ void assert_lstm_network_pass_inputs(int cellsCount, int inputCount, int nodesCo
         }
     }
     lstm_neural_network_destroy(lstm_network);
-    free(lstm_network);
 }
 
 void assert_lstm_network_forward_propagation(int cellsCount, int inputCount, int nodesCount) {
@@ -169,7 +168,6 @@ void assert_lstm_network_forward_propagation(int cellsCount, int inputCount, int
     }
 
     lstm_neural_network_destroy(lstm_network);
-    free(lstm_network);
 }
 
 void assert_double_lstm_network_forward_propagation(int cellsCount, int inputCount, int nodesCount) {
@@ -265,10 +263,7 @@ void assert_double_lstm_network_forward_propagation(int cellsCount, int inputCou
         assert(forecast_vector[cell_index][1] == lstm_network->next->lstm_cells[cell_index].hidden_state[1]);
     }
     lstm_neural_network_full_mean_squared_error_calculation(lstm_network);
-    lstm_neural_network_destroy(lstm_network->next);
     lstm_neural_network_destroy(lstm_network);
-    free(lstm_network->next);
-    free(lstm_network);
 }
 
 void assert_double_lstm_network_forward_propagation_with_forecast_vector(int cellsCount, int inputCount, int nodesCount, int forecastCellsCount) {
