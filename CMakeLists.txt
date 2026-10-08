@@ -10,8 +10,8 @@ add_executable(LSTM_c_project src/main.c
         src/nn/common/node/node.c
         src/nn/common/bias/bias.c
         src/nn/common/bias/bias.h
-        src/nn/constants/constants.h
-        src/nn/constants/constants.c
+        src/constants/constants.h
+        src/constants/constants.c
         src/nn/lstm/lstm_cell/lstm_cell.h
         src/nn/lstm/lstm_cell/lstm_cell.c
         src/nn/lstm/lstm_neural_network/lstm_neural_network.c
@@ -26,8 +26,8 @@ add_executable(LSTM_c_project src/main.c
         src/helpers/predicted_price/predicted_price.h
         src/helpers/predicted_vector/predicted_vector.c
         src/helpers/predicted_vector/predicted_vector.h
-        src/helpers/calendar_vector/calendar_vector.c
-        src/helpers/calendar_vector/calendar_vector.h
+        src/helpers/format_output/format_output.c
+        src/helpers/format_output/format_output.h
         src/mode/forecast/forecast_mode.c
         src/mode/forecast/forecast_mode.h
         src/mode/training/training_mode.c
@@ -46,6 +46,6 @@ add_library(bias_library src/nn/common/bias/bias.c)
 add_library(lstm_cell_library src/nn/lstm/lstm_cell/lstm_cell.c)
 add_library(lstm_network_library src/nn/lstm/lstm_neural_network/lstm_neural_network.c)
 add_library(file_read_library src/helpers/mt5_file_read/mt5_file_read.c)
-add_library(constants_library src/nn/constants/constants.c)
+add_library(constants_library src/constants/constants.c)
 
 add_subdirectory(test)

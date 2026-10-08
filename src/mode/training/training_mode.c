@@ -10,7 +10,7 @@ void training_process(t_lstm_neural_network *lstm_network, t_lstm_neural_network
 	 * acceptable mean square error MSE 0.0000000002
 	 */
 	printf("\nTraining mode:\n");
-	mt5_file_init(main_struct->file, main_struct->training_source_file_path);
+	mt5_file_init(main_struct->file, main_struct->source_file);
 	if (main_struct->weight_factors_file_path != 0) {
 		weight_factors_load_from_file(lstm_network, main_struct);
 	}
@@ -46,7 +46,7 @@ void training_process(t_lstm_neural_network *lstm_network, t_lstm_neural_network
 		lstm_neural_network_full_mean_squared_error_calculation(lstm_network);
 		printf("file pointer %d\n", row_index);
 		printf("MSE %3.15f\n", lstm_network_last_pointer->full_mean_squared_error);
-		if (main_struct->training_source_file_path != 0 && main_struct->weight_factors_file_path != 0) {
+		if (main_struct->source_file != 0 && main_struct->weight_factors_file_path != 0) {
 			printf("\nSave weight factors to %s\n", main_struct->weight_factors_file_path);
 			weight_factors_save_to_file(lstm_network, main_struct);
 		}

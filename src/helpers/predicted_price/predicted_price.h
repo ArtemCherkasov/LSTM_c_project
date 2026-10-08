@@ -6,6 +6,7 @@
 #define LSTM_C_PROJECT_PREDICTED_DATA_H
 
 #include "../../helpers/mt5_file_read/mt5_file_read.h"
+#include "../../helpers/main_struct/main_struct.h"
 
 typedef struct PredictedPrice t_predicted_price;
 
@@ -26,6 +27,6 @@ struct PredictedPrice {
 	int minute;
 };
 
-void predicted_price_init(t_predicted_price *predicted_price, t_mt5line *mt5_line);
+void predicted_price_init(t_predicted_price *predicted_price, t_main_struct *main_struct);
 
 #endif //LSTM_C_PROJECT_PREDICTED_DATA_H

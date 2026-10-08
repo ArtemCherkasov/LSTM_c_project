@@ -7,10 +7,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-void predicted_vector_init(t_predicted_vector *predicted_vector, int forecast_gap) {
-	printf("predicted_vector_init\n");
-	predicted_vector->predicted_vector_size = forecast_gap;
-	predicted_vector->predicted_price = malloc(sizeof(t_predicted_price) * forecast_gap);
+#include "../format_output/format_output.h"
+
+void predicted_vector_init(t_predicted_vector *predicted_vector, t_main_struct *main_struct) {
+	std_output_line(main_struct->verbose, "predicted_vector_init\n");
+	predicted_vector->predicted_vector_size = main_struct->step_forecasts;
+	predicted_vector->predicted_price = malloc(sizeof(t_predicted_price) * main_struct->step_forecasts);
+	predicted_vector->verbose = main_struct->verbose;
 }
 
 void predicted_vector_get_data_from_lstm_net(t_predicted_vector *predicted_vector, t_lstm_neural_network *lstm_network) {
@@ -31,7 +34,7 @@ void predicted_vector_get_data_from_lstm_net(t_predicted_vector *predicted_vecto
 	double high_next = 0.0;
 	double low_next = 0.0;
 	double close_next = 0.0;
-	printf("last vector before predict [%2.10f %2.10f %2.10f %2.10f]\n", open, high, low, close);
+	std_output_line(predicted_vector->verbose, "last vector before predict [%2.10f %2.10f %2.10f %2.10f]\n", open, high, low, close);
 	if (lstm_network_last_pointer->cells_count_full - predicted_vector->predicted_vector_size > 0) {
 		for (int cell_index = (lstm_network_last_pointer->cells_count_full - predicted_vector->predicted_vector_size); cell_index < lstm_network_last_pointer->cells_count_full; cell_index++) {
 			open_next = lstm_network_last_pointer->lstm_cells[cell_index - 1].hidden_state[SHORT_OPEN_INDEX];
@@ -52,8 +55,14 @@ void predicted_vector_get_data_from_lstm_net(t_predicted_vector *predicted_vecto
 }
 
 void predicted_vector_print(t_predicted_vector *predicted_vector) {
-	for (int price_index = 0; price_index < predicted_vector->predicted_vector_size; price_index++) {
-		printf("%d) [%2.10f %2.10f %2.10f %2.10f]\n", price_index, predicted_vector->predicted_price[price_index].open_output, predicted_vector->predicted_price[price_index].high_output, predicted_vector->predicted_price[price_index].low_output, predicted_vector->predicted_price[price_index].close_output);
+	if (predicted_vector->verbose) {
+		for (int price_index = 0; price_index < predicted_vector->predicted_vector_size; price_index++) {
+			printf("%d) [%2.10f %2.10f %2.10f %2.10f]\n", price_index, predicted_vector->predicted_price[price_index].open_output, predicted_vector->predicted_price[price_index].high_output, predicted_vector->predicted_price[price_index].low_output, predicted_vector->predicted_price[price_index].close_output);
+		}
+	} else {
+		for (int price_index = 0; price_index < predicted_vector->predicted_vector_size; price_index++) {
+			printf("%1.5f %1.5f %1.5f %1.5f\n", predicted_vector->predicted_price[price_index].open_output, predicted_vector->predicted_price[price_index].high_output, predicted_vector->predicted_price[price_index].low_output, predicted_vector->predicted_price[price_index].close_output);
+		}
 	}
 }
 

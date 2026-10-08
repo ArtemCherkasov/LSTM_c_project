@@ -42,4 +42,12 @@ extern const double NORMALIZE_FACTOR_DIFF;
 extern const double HIDDEN_STATE_FACTOR;
 extern const double CORRECTION_TO_SIGMA_MIDDLE;
 extern const double AMOUNT_OF_EXPANSION_SIGMA;
+extern const int DAYS;
+extern const int HOURS;
+extern const int CELL_COUNT;
+extern const int CELL_COUNT_TEST;
+extern const int STEP_FORECAST;
+extern const int STEP_FORECAST_TEST;
+extern const int FORECAST_GAP;
+extern const int FORECATS_GAP_TEST_MODE;
 #endif //LSTM_C_PROJECT_CONSTANTS_H

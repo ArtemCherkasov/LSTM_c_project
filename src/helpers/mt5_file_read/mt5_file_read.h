@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "../../nn/constants/constants.h"
+#include "../../constants/constants.h"
 
 #ifdef _WIN32
 #define FILE_SEPARATOR "\\"

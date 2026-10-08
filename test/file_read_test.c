@@ -7,7 +7,7 @@
 #include <math.h>
 #include <string.h>
 #include "../src/helpers/mt5_file_read/mt5_file_read.h"
-#include "../src/nn/constants/constants.h"
+#include "../src/constants/constants.h"
 
 char path[1024];
 char parent_dir[] = "..";

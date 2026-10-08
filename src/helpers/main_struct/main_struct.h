@@ -10,8 +10,7 @@ typedef struct MainStruct t_main_struct;
 struct MainStruct {
 	int test_mode;
 	char *mode;
-	char *training_source_file_path;
-	char *source_to_forecast_file_path;
+	char *source_file;
 	int forecast_from_line;
 	char *weight_factors_file_path;
 	char *price_symbol;
@@ -20,9 +19,13 @@ struct MainStruct {
 	int step_forecasts;
 	int forecasts_gap;
 	int cell_count;
+	int get_from_line;
+	int get_count;
+	bool verbose;
 	t_mt5file *file;
 };
 
+void prepare_main_struct(t_main_struct *main_struct, int argc, char *argv[]);
 void print_main_struct_info(t_main_struct *main_struct);
 
 #endif //LSTM_C_PROJECT_MAIN_STRUCT_H

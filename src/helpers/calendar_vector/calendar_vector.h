@@ -1,8 +1,0 @@
-//
-// Created by User on 11.07.2026.
-//
-
-#ifndef LSTM_C_PROJECT_CALENDAR_VECTOR_H
-#define LSTM_C_PROJECT_CALENDAR_VECTOR_H
-
-#endif //LSTM_C_PROJECT_CALENDAR_VECTOR_H

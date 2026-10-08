@@ -4,7 +4,7 @@
 
 #ifndef LSTM_C_PROJECT_BIAS_H
 #define LSTM_C_PROJECT_BIAS_H
-#include "../../constants/constants.h"
+#include "../../../constants/constants.h"
 typedef struct Bias t_bias;
 
 struct Bias {

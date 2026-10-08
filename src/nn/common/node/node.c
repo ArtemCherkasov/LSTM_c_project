@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "../../constants/constants.h"
+#include "../../../constants/constants.h"
 
 void node_init(t_node *node, int inputCount) {
     node->inputCount = inputCount;
