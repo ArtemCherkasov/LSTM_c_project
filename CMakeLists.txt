@@ -47,5 +47,6 @@ add_library(lstm_cell_library src/nn/lstm/lstm_cell/lstm_cell.c)
 add_library(lstm_network_library src/nn/lstm/lstm_neural_network/lstm_neural_network.c)
 add_library(file_read_library src/helpers/mt5_file_read/mt5_file_read.c)
 add_library(constants_library src/constants/constants.c)
+add_library(format_output_library src/helpers/format_output/format_output.c)
 
 add_subdirectory(test)

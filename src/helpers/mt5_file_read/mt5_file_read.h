@@ -53,7 +53,7 @@ struct MT5Line {
 	double *short_buffer_diff;
 };
 
-void mt5_file_init(t_mt5file *mt5file, char *filename);
+void mt5_file_init(t_mt5file *mt5file, char *filename, bool print_verbose);
 void mt5_file_print_normalize_array(t_mt5line *mt5line);
 void mt5_file_print_unormalize_array_from_vector(double *vector);
 void mt5_file_print_full_buffer_diff(t_mt5file *mt5file, int line);

@@ -10,7 +10,7 @@ void training_process(t_lstm_neural_network *lstm_network, t_lstm_neural_network
 	 * acceptable mean square error MSE 0.0000000002
 	 */
 	printf("\nTraining mode:\n");
-	mt5_file_init(main_struct->file, main_struct->source_file);
+	mt5_file_init(main_struct->file, main_struct->source_file, main_struct->verbose);
 	if (main_struct->weight_factors_file_path != 0) {
 		weight_factors_load_from_file(lstm_network, main_struct);
 	}

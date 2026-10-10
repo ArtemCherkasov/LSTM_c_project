@@ -31,6 +31,7 @@ target_link_libraries(lstm_network_test m)
 
 target_link_libraries(file_read_test file_read_library)
 target_link_libraries(file_read_test constants_library)
+target_link_libraries(file_read_test format_output_library)
 target_link_libraries(file_read_test m)
 target_link_libraries(file_read_test pthread)
 

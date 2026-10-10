@@ -48,3 +48,4 @@ const int STEP_FORECAST = 0;
 const int STEP_FORECAST_TEST = 0;
 const int FORECAST_GAP = 1;
 const int FORECATS_GAP_TEST_MODE = 1;
+

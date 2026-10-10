@@ -14,7 +14,7 @@ void print_forecast_to_standard_output(t_lstm_neural_network *lstm_network, t_ls
 	std_output_line(main_struct->verbose, "\nForecast mode:\n");
 	print_main_struct_info(main_struct);
 	t_predicted_vector *predicted_vector;
-	mt5_file_init(main_struct->file, main_struct->source_file);
+	mt5_file_init(main_struct->file, main_struct->source_file, main_struct->verbose);
 	if (main_struct->weight_factors_file_path != 0) {
 		std_output_line(main_struct->verbose, "Weight factors file: %s\n", main_struct->weight_factors_file_path);
 		weight_factors_load_from_file(lstm_network, main_struct);

@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+
+#include "../format_output/format_output.h"
 #include "../mt5_file_read/mt5_file_read.h"
 
 #define WEIGHT_DELIMITER " "
@@ -170,7 +172,7 @@ void weight_factors_load_from_file(t_lstm_neural_network *lstm_network, t_main_s
 		free(file_separator);
 		return;
 	}
-	printf("\nOpen file %s\n", path);
+	std_output_line(main_struct->verbose, "\nOpen file %s\n", path);
 
 	/*
 	 *load weight
@@ -184,7 +186,7 @@ void weight_factors_load_from_file(t_lstm_neural_network *lstm_network, t_main_s
 	fgets(buffer, sizeof(char) * 1024, file);
 	fgets(buffer, sizeof(char) * 1024, file);
 	while (lstm_network != NULL) {
-		printf("Cells count %d\n", lstm_network->cells_count_full);
+		std_output_line(main_struct->verbose, "Cells count %d\n", lstm_network->cells_count_full);
 		for (int cell_index = 0; cell_index < lstm_network->cells_count_full; cell_index++) {
 			for (int node_index = 0; node_index < lstm_network->lstm_cells[cell_index].node_count_per_single_gate; node_index++) {
 				fgets(buffer, sizeof(char) * 1024, file);

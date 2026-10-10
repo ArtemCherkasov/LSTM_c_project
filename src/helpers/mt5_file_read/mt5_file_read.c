@@ -10,7 +10,9 @@
 #include <string.h>
 #include <time.h>
 
-void mt5_file_init(t_mt5file *mt5file, char *filename) {
+#include "../format_output/format_output.h"
+
+void mt5_file_init(t_mt5file *mt5file, char *filename, bool print_verbose) {
 	char *date_buffer = malloc(sizeof(char) * 16);
 	char *time_buffer = malloc(sizeof(char) * 16);
 	char *strtok_buffer = malloc(sizeof(char) * 1024);
@@ -32,10 +34,10 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 	strcat(mt5file->path, file_separator);
 	strcat(mt5file->path, filename);
 
-	printf("\nOpen file %s\n", mt5file->path);
+	std_output_line(print_verbose, "\nOpen file %s\n", mt5file->path);
 	mt5file->file = fopen(mt5file->path, "r");
 	if (mt5file->file == NULL) {
-		printf("\nCould not open file %s\n", mt5file->path);
+		std_output_line(print_verbose, "\nCould not open file %s\n", mt5file->path);
 	}
 
 	while (!feof(mt5file->file)) {
@@ -45,7 +47,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		}
 	}
 
-	printf("Lines count %d\n", mt5file->linesCount);
+	std_output_line(print_verbose, "Lines count %d\n", mt5file->linesCount);
 
 	rewind(mt5file->file);
 	mt5file->lines = malloc(sizeof(t_mt5line) * (mt5file->linesCount + 1));
@@ -58,7 +60,7 @@ void mt5_file_init(t_mt5file *mt5file, char *filename) {
 		mt5file->lines[line_index].short_buffer_diff = malloc(sizeof(double) * PREDICT_VECTOR_SIZE);
 	}
 
-	printf("Start prices parsing\n");
+	std_output_line(print_verbose, "Start prices parsing\n");
 	for (int line_index = 0; line_index < mt5file->linesCount; line_index++) {
 		fgets(mt5file->lines[line_index].buffer, sizeof(char) * 1024, mt5file->file);
 		strcpy(strtok_buffer, mt5file->lines[line_index].buffer);

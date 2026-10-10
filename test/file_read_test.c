@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <math.h>
 #include <string.h>
@@ -44,7 +45,7 @@ double volume_101053_norm = 0.174000;
 void assert_file_read(char *file_name) {
     t_mt5file *file = malloc(sizeof(t_mt5file));
     printf("FILE will be read: %s\n", file_name);
-    mt5_file_init(file, file_name);
+    mt5_file_init(file, file_name, false);
 
     assert(false == file->lines[0].has_not_error);
     assert(fabs(open_1 - file->lines[1].open) < EPS);
