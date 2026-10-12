@@ -20,6 +20,7 @@ struct MainStruct {
 	int forecasts_gap;
 	int cell_count;
 	int get_from_line;
+	char *get_from_datetime;
 	int get_count;
 	bool verbose;
 	t_mt5file *file;

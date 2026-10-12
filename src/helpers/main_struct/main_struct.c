@@ -54,6 +54,9 @@ void prepare_main_struct(t_main_struct *main_struct, int argc, char *argv[]) {
 		if (strcmp(argv[arg_index], "--getfromline") == 0) {
 			main_struct->get_from_line = atoi(argv[arg_index + 1]);
 		}
+		if (strcmp(argv[arg_index], "--getfromdatetime") == 0) {
+			main_struct->get_from_datetime = argv[arg_index + 1];
+		}
 		if (strcmp(argv[arg_index], "--getcount") == 0) {
 			main_struct->get_count = atoi(argv[arg_index + 1]);
 		}

@@ -38,6 +38,11 @@ void mt5_file_init(t_mt5file *mt5file, char *filename, bool print_verbose) {
 	mt5file->file = fopen(mt5file->path, "r");
 	if (mt5file->file == NULL) {
 		std_output_line(print_verbose, "\nCould not open file %s\n", mt5file->path);
+		std_output_line(print_verbose, "\nOpen file %s\n", filename);
+		mt5file->file = fopen(filename, "r");
+	}
+	if (mt5file->file == NULL) {
+		std_output_line(print_verbose, "\nCould not open file %s\n", filename);
 	}
 
 	while (!feof(mt5file->file)) {

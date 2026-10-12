@@ -39,7 +39,7 @@ void training_process(t_lstm_neural_network *lstm_network, t_lstm_neural_network
 		for (int cell_index = 0; cell_index < (main_struct->cell_count + main_struct->step_forecasts); cell_index++) {
 			lstm_cell_set_expected_vector(&lstm_network_last_pointer->lstm_cells[cell_index], main_struct->file->lines[row_index + cell_index + main_struct->forecasts_gap].short_buffer_diff);
 		}
-		for (int batch_index = 0; batch_index < 50; batch_index++) {
+		for (int batch_index = 0; batch_index < 500; batch_index++) {
 			lstm_neural_network_learning_step_bptt(lstm_network);
 			lstm_neural_network_forward_propagation(lstm_network);
 		}

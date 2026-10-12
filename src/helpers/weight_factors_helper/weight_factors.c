@@ -168,11 +168,16 @@ void weight_factors_load_from_file(t_lstm_neural_network *lstm_network, t_main_s
 	}
 	file = fopen(path, "r");
 	if (file == NULL) {
-		printf("\nCould not open file %s\n", path);
+		std_output_line(main_struct->verbose,"\nCould not open file %s\n", path);
+		std_output_line(main_struct->verbose, "\nTry open file %s\n", main_struct->weight_factors_file_path);
+		file = fopen(main_struct->weight_factors_file_path, "r");
+	}
+	if (file == NULL) {
+		std_output_line(main_struct->verbose,"\nCould not open file %s\n", path);
 		free(file_separator);
 		return;
 	}
-	std_output_line(main_struct->verbose, "\nOpen file %s\n", path);
+	std_output_line(main_struct->verbose, "\nSuccessful file opening\n");
 
 	/*
 	 *load weight
